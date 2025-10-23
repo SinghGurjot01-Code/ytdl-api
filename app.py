@@ -18,6 +18,8 @@ import io
 import base64
 import urllib.parse
 
+YTDL_COOKIES_PATH = os.environ.get('YTDL_COOKIES_PATH')
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
@@ -256,7 +258,7 @@ def is_format_available(formats, requested_format):
         return False
 
 def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_available):
-    """Get yt-dlp options with retry and anti-bot measures"""
+    """Get yt-dlp options with retry, anti-bot measures, and optional cookies"""
     base_opts = {
         'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
         'progress_hooks': [progress_hook_factory(job_id)],
@@ -265,23 +267,24 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         'no_warnings': True,
         'nopart': False,
         'noplaylist': True,
-        # Anti-bot evasion measures
         'extractor_retries': 3,
         'retries': 10,
         'fragment_retries': 10,
         'skip_unavailable_fragments': True,
         'continuedl': True,
         'throttled_rate': None,
-        # HTTP headers to mimic browser
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-us,en;q=0.5',
             'Accept-Encoding': 'gzip,deflate',
-            'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.7',
             'Connection': 'keep-alive',
         },
     }
+
+    # Use cookies if environment variable is set
+    if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
+        base_opts['cookiefile'] = YTDL_COOKIES_PATH
 
     # Choose format options
     try:
@@ -295,14 +298,10 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
                         'preferredquality': '192',
                     }],
                 })
-                logger.info("Job %s - audio conversion via ffmpeg -> %s", job_id, file_ext)
             else:
                 base_opts['format'] = 'bestaudio/best'
-                logger.info("Job %s - ffmpeg not available, downloading best native audio", job_id)
         else:
-            # For video formats, use a more flexible approach
             base_opts['format'] = format_str
-            logger.info("Job %s - video format option set to: %s", job_id, format_str)
     except Exception as e:
         logger.exception("Job %s - error building ydl_opts: %s", job_id, e)
 
@@ -905,3 +904,4 @@ if __name__ == '__main__':
     
 
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
