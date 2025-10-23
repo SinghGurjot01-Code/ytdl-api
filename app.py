@@ -32,6 +32,24 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+LOG_FILE_PATH = 'logs/ytdl.log'
+LOG_CLEAR_INTERVAL = 10 * 60  # every 10 minutes
+
+def auto_clear_log():
+    while True:
+        try:
+            if os.path.exists(LOG_FILE_PATH):
+                with open(LOG_FILE_PATH, 'w', encoding='utf-8') as f:
+                    f.truncate(0)
+                logger.info("Auto-cleared ytdl.log file to prevent bloat")
+        except Exception as e:
+            logger.error("Error clearing log file: %s", e)
+        time.sleep(LOG_CLEAR_INTERVAL)
+
+# Start background thread for log clearing
+threading.Thread(target=auto_clear_log, daemon=True).start()
+
+
 # In-memory tracking
 download_status = {}
 captcha_store = {}
@@ -885,4 +903,5 @@ if __name__ == '__main__':
     print(f"✅ YTDL API Server starting on port {port}")
     logger.info(f"YTDL API Server starting on port {port}")
     
+
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
