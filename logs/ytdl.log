@@ -1,0 +1,502 @@
+2025-10-23 11:58:21,958 - INFO - CAPTCHA verification successful for ID: ad931387-9e86-44f1-bfa1-afee8ecc4755, session: 4c179388-cf1f-48ef-8746-f13df5bbff36
+2025-10-23 11:58:21,959 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:21] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 11:58:32,070 - INFO - Session token 4c179388-cf1f-48ef-8746-f13df5bbff36 consumed for job 0bb6901a-0117-47ff-bade-b8ce7e34742b
+2025-10-23 11:58:32,071 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:32] "POST /api/download HTTP/1.1" 200 -
+2025-10-23 11:58:32,090 - INFO - Generated CAPTCHA: 3043 with ID: 25fc5ed8-c58f-41d8-bc5e-1dd77a5fdea2
+2025-10-23 11:58:32,094 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:32] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 11:58:32,114 - INFO - Job 0bb6901a-0117-47ff-bade-b8ce7e34742b - temp_dir: C:\Users\WELCOME\AppData\Local\Temp\ytdl_soy43bxu - ffmpeg_available: True
+2025-10-23 11:58:32,114 - INFO - Job 0bb6901a-0117-47ff-bade-b8ce7e34742b - video format option set to: bestvideo[height<=480]+bestaudio/best[height<=480]
+2025-10-23 11:58:33,079 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:33] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:34,089 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:34] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:35,078 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:35] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:36,102 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:36] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:37,161 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:37] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:38,150 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:38] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:39,107 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:39] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:40,104 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:40] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:41,105 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:41] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:42,119 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:42] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:42,217 - WARNING - Job 0bb6901a-0117-47ff-bade-b8ce7e34742b - DownloadError (attempt 1/3): [0;31mERROR:[0m unable to download video data: HTTP Error 403: Forbidden
+2025-10-23 11:58:42,217 - INFO - Job 0bb6901a-0117-47ff-bade-b8ce7e34742b - 403 error, waiting 2 seconds before retry 1
+2025-10-23 11:58:43,118 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:43] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:44,115 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:44] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:44,220 - INFO - Job 0bb6901a-0117-47ff-bade-b8ce7e34742b - video format option set to: bestvideo[height<=480]+bestaudio/best[height<=480]
+2025-10-23 11:58:45,103 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:45] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:46,103 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:46] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:47,105 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:47] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:48,111 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:48] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:49,165 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:49] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:50,106 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:50] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:51,106 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:51] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:52,106 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:52] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:53,102 - INFO - 127.0.0.1 - - [23/Oct/2025 11:58:53] "GET /api/download-status/0bb6901a-0117-47ff-bade-b8ce7e34742b HTTP/1.1" 200 -
+2025-10-23 11:58:54,023 - 2025-10-23 12:03:08,618 - INFO - FFmpeg available - full functionality enabled.
+2025-10-23 12:03:08,619 - INFO - CAPTCHA image system initialized with Pillow
+2025-10-23 12:03:08,668 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.43.239:5000
+2025-10-23 12:03:08,668 - INFO - [33mPress CTRL+C to quit[0m
+2025-10-23 12:03:13,064 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:13] "GET / HTTP/1.1" 200 -
+2025-10-23 12:03:13,212 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:13] "GET /api/ffmpeg-status HTTP/1.1" 200 -
+2025-10-23 12:03:13,213 - INFO - Generated CAPTCHA: 8675 with ID: cd8b1d00-07b1-4d26-97df-38532a99bfa1
+2025-10-23 12:03:13,214 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:13] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 12:03:36,460 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:36] "POST /api/video-info HTTP/1.1" 200 -
+2025-10-23 12:03:42,094 - INFO - CAPTCHA verification successful for ID: cd8b1d00-07b1-4d26-97df-38532a99bfa1, session: 65375ec5-8493-4b0a-a6f8-b336c4afe936
+2025-10-23 12:03:42,095 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:42] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 12:03:54,969 - INFO - Session token 65375ec5-8493-4b0a-a6f8-b336c4afe936 consumed for job a81e4458-9852-42a9-be2e-b0a9cd666035
+2025-10-23 12:03:54,971 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:54] "POST /api/download HTTP/1.1" 200 -
+2025-10-23 12:03:54,992 - INFO - Generated CAPTCHA: 6312 with ID: 2b3b07de-340f-4160-9cd8-c800e674ee53
+2025-10-23 12:03:54,993 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:54] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 12:03:55,014 - INFO - Job a81e4458-9852-42a9-be2e-b0a9cd666035 - temp_dir: C:\Users\WELCOME\AppData\Local\Temp\ytdl_qci8byix - ffmpeg_available: True
+2025-10-23 12:03:55,014 - INFO - Job a81e4458-9852-42a9-be2e-b0a9cd666035 - audio conversion via ffmpeg -> mp3
+2025-10-23 12:03:55,981 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:55] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:03:56,980 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:56] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:03:57,989 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:57] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:03:58,983 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:58] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:03:59,984 - INFO - 127.0.0.1 - - [23/Oct/2025 12:03:59] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:00,978 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:00] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:02,272 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:02] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:03,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:03] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:04,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:04] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:05,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:05] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:06,116 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:06] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:07,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:07] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:09,236 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:09] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:09,240 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:09] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:10,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:10] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:11,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:11] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:12,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:12] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:13,113 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:13] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:14,113 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:14] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:15,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:15] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:16,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:16] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:17,113 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:17] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:18,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:18] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:19,114 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:19] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:20,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:20] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:21,108 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:21] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:22,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:22] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:04:22,609 - WARNING - Job a81e4458-9852-42a9-be2e-b0a9cd666035 - DownloadError (attempt 1/3): [0;31mERROR:[0m [download] Got error: [Errno 11001] getaddrinfo failed. Giving up after 10 retries
+2025-10-23 12:04:23,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:04:23] "GET /api/download-status/a81e4458-9852-42a9-be2e-b0a9cd666035 HTTP/1.1" 200 -
+2025-10-23 12:06:34,985 - INFO - 127.0.0.1 - - [23/Oct/2025 12:06:34] "GET / HTTP/1.1" 200 -
+2025-10-23 12:06:35,044 - INFO - Generated CAPTCHA: 9928 with ID: e72e296d-8875-422b-8681-e473b7038ee6
+2025-10-23 12:06:35,045 - INFO - 127.0.0.1 - - [23/Oct/2025 12:06:35] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 12:06:35,081 - INFO - 127.0.0.1 - - [23/Oct/2025 12:06:35] "GET /api/ffmpeg-status HTTP/1.1" 200 -
+2025-10-23 12:06:55,334 - INFO - 127.0.0.1 - - [23/Oct/2025 12:06:55] "POST /api/video-info HTTP/1.1" 200 -
+2025-10-23 12:07:04,805 - INFO - CAPTCHA verification successful for ID: e72e296d-8875-422b-8681-e473b7038ee6, session: 2cea0eb9-4c63-46f5-8100-ba2d3d59753e
+2025-10-23 12:07:04,805 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:04] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 12:07:17,778 - INFO - Session token 2cea0eb9-4c63-46f5-8100-ba2d3d59753e consumed for job b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5
+2025-10-23 12:07:17,779 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:17] "POST /api/download HTTP/1.1" 200 -
+2025-10-23 12:07:17,799 - INFO - Generated CAPTCHA: 7924 with ID: 5dbe90fb-f250-413d-a2fc-d132f0060631
+2025-10-23 12:07:17,800 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:17] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 12:07:17,822 - INFO - Job b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 - temp_dir: C:\Users\WELCOME\AppData\Local\Temp\ytdl_rc4mgr17 - ffmpeg_available: True
+2025-10-23 12:07:17,822 - INFO - Job b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 - audio conversion via ffmpeg -> mp3
+2025-10-23 12:07:18,789 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:18] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:19,795 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:19] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:20,789 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:20] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:21,796 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:21] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:22,795 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:22] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:23,789 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:23] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:24,790 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:24] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:25,789 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:25] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:27,262 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:27] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:27,788 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:27] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:28,788 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:28] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:29,788 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:29] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:30,789 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:30] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:31,789 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:31] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:32,789 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:32] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:33,793 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:33] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:35,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:35] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:36,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:36] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:37,107 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:37] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:38,108 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:38] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:39,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:39] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:39,279 - INFO - Progress hook finished for job b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5: C:\Users\WELCOME\AppData\Local\Temp\ytdl_rc4mgr17\Shubh - Bars (Official Music Video).webm
+2025-10-23 12:07:40,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:40] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:41,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:41] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:42,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:42] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:43,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:43] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:43,294 - INFO - Job b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 - download completed: C:\Users\WELCOME\AppData\Local\Temp\ytdl_rc4mgr17\Shubh - Bars (Official Music Video).mp3
+2025-10-23 12:07:43,789 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:43] "GET /api/download-status/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:07:44,812 - INFO - 127.0.0.1 - - [23/Oct/2025 12:07:44] "GET /api/download-file/b70bcbc9-87a5-469a-a6ca-70cbfcbdc6e5 HTTP/1.1" 200 -
+2025-10-23 12:08:59,212 - INFO - Cleaned up 1 expired CAPTCHAs and 0 expired sessions
+2025-10-23 12:08:59,213 - INFO - CAPTCHA verification successful for ID: 5dbe90fb-f250-413d-a2fc-d132f0060631, session: 4dbf11ae-55c0-48bb-88de-9be248f4db84
+2025-10-23 12:08:59,213 - INFO - 127.0.0.1 - - [23/Oct/2025 12:08:59] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 12:09:25,234 - INFO - Session token 4dbf11ae-55c0-48bb-88de-9be248f4db84 consumed for job 1c28669e-c108-4faa-9cd6-185bbb0f19ce
+2025-10-23 12:09:25,235 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:25] "POST /api/download HTTP/1.1" 200 -
+2025-10-23 12:09:25,250 - INFO - Generated CAPTCHA: 7528 with ID: 74ee209f-17a0-4fac-b3fe-53338259fa57
+2025-10-23 12:09:25,251 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:25] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 12:09:25,272 - INFO - Job 1c28669e-c108-4faa-9cd6-185bbb0f19ce - temp_dir: C:\Users\WELCOME\AppData\Local\Temp\ytdl_eta8nmoq - ffmpeg_available: True
+2025-10-23 12:09:25,272 - INFO - Job 1c28669e-c108-4faa-9cd6-185bbb0f19ce - video format option set to: bestvideo[height<=2160]+bestaudio/best[height<=2160]
+2025-10-23 12:09:27,108 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:27] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:28,108 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:28] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:29,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:29] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:30,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:30] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:31,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:31] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:32,107 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:32] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:33,110 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:33] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:34,220 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:34] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:35,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:35] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:36,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:36] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:37,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:37] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:38,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:38] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:39,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:39] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:40,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:40] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:41,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:41] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:42,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:42] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:43,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:43] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:44,116 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:44] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:45,116 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:45] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:46,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:46] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:47,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:47] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:48,128 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:48] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:49,110 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:49] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:50,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:50] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:51,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:51] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:52,110 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:52] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:53,114 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:53] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:54,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:54] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:55,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:55] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:56,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:56] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:57,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:57] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:58,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:58] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:09:59,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:09:59] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:00,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:00] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:01,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:01] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:02,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:02] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:03,107 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:03] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:04,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:04] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:05,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:05] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:06,113 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:06] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:07,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:07] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:08,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:08] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:09,108 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:09] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:10,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:10] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:11,116 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:11] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:12,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:12] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:13,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:13] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:14,110 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:14] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:39,282 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:39] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:40,242 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:40] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:41,243 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:41] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:42,242 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:42] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:43,243 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:43] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:44,243 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:44] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:46,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:46] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:47,107 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:47] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:48,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:48] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:48,242 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:48] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:49,243 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:49] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:51,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:51] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:52,110 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:52] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:53,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:53] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:54,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:54] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:55,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:55] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:56,108 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:56] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:57,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:57] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:58,116 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:58] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:10:59,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:10:59] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:00,113 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:00] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:01,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:01] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:02,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:02] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:03,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:03] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:04,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:04] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:05,107 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:05] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:06,118 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:06] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:07,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:07] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:08,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:08] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:09,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:09] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:10,105 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:10] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:11,108 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:11] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:12,107 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:12] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:13,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:13] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:14,116 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:14] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:15,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:15] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:16,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:16] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:17,114 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:17] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:18,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:18] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:19,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:19] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:20,104 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:20] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:21,110 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:21] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:22,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:22] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:23,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:23] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:24,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:24] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:25,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:25] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:26,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:26] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:27,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:27] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:28,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:28] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:29,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:29] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:30,113 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:30] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:31,114 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:31] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:32,114 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:32] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:33,113 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:33] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:34,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:34] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:35,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:35] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:35,600 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:35] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:36,247 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:36] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:37,250 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:37] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:39,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:39] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:40,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:40] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:41,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:41] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:42,114 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:42] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:43,116 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:43] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:44,108 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:44] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:45,106 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:45] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:46,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:46] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:47,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:47] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:48,124 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:48] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:49,112 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:49] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:50,114 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:50] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:51,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:51] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:52,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:52] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:53,113 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:53] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:54,111 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:54] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:55,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:55] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:56,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:56] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:57,116 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:57] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:58,102 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:58] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:11:59,117 - INFO - 127.0.0.1 - - [23/Oct/2025 12:11:59] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:12:00,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:12:00] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:12:01,103 - INFO - 127.0.0.1 - - [23/Oct/2025 12:12:01] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:12:02,115 - INFO - 127.0.0.1 - - [23/Oct/2025 12:12:02] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:12:03,109 - INFO - 127.0.0.1 - - [23/Oct/2025 12:12:03] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 12:12:03,656 - INFO - 127.0.0.1 - - [23/Oct/2025 12:12:03] "GET /api/download-status/1c28669e-c108-4faa-9cd6-185bbb0f19ce HTTP/1.1" 200 -
+2025-10-23 13:32:23,835 - INFO - FFmpeg available - full functionality enabled.
+2025-10-23 13:32:23,835 - INFO - CAPTCHA image system initialized with Pillow
+2025-10-23 13:32:23,883 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.22.165:5000
+2025-10-23 13:32:23,884 - INFO - [33mPress CTRL+C to quit[0m
+2025-10-23 13:32:28,553 - INFO - 127.0.0.1 - - [23/Oct/2025 13:32:28] "GET / HTTP/1.1" 200 -
+2025-10-23 13:32:28,684 - INFO - 127.0.0.1 - - [23/Oct/2025 13:32:28] "GET /api/ffmpeg-status HTTP/1.1" 200 -
+2025-10-23 13:32:28,693 - INFO - Generated CAPTCHA: 2704 with ID: 102ef5c9-1d55-415c-8c57-641a626d9152
+2025-10-23 13:32:28,693 - INFO - 127.0.0.1 - - [23/Oct/2025 13:32:28] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 13:32:44,691 - INFO - 127.0.0.1 - - [23/Oct/2025 13:32:44] "POST /api/video-info HTTP/1.1" 200 -
+2025-10-23 13:33:13,554 - INFO - CAPTCHA verification successful for ID: 102ef5c9-1d55-415c-8c57-641a626d9152, session: ab13e207-e465-4ad9-92e9-fb1991224d60
+2025-10-23 13:33:13,556 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:13] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 13:33:33,896 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:33] "POST /api/video-info HTTP/1.1" 200 -
+2025-10-23 13:33:40,790 - INFO - Session token ab13e207-e465-4ad9-92e9-fb1991224d60 consumed for job 88702935-950a-49ab-bb5f-10ce681c4405
+2025-10-23 13:33:40,792 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:40] "POST /api/download HTTP/1.1" 200 -
+2025-10-23 13:33:40,811 - INFO - Generated CAPTCHA: 7208 with ID: 816056d3-e20d-48c6-a80f-493b13ccacb9
+2025-10-23 13:33:40,812 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:40] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 13:33:40,838 - INFO - Job 88702935-950a-49ab-bb5f-10ce681c4405 - temp_dir: C:\Users\WELCOME\AppData\Local\Temp\ytdl_l7hte8ys - ffmpeg_available: True
+2025-10-23 13:33:40,838 - INFO - Job 88702935-950a-49ab-bb5f-10ce681c4405 - audio conversion via ffmpeg -> mp3
+2025-10-23 13:33:43,116 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:43] "GET /api/download-status/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:33:45,504 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:45] "GET /api/download-status/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:33:47,102 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:47] "GET /api/download-status/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:33:48,800 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:48] "GET /api/download-status/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:33:50,801 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:50] "GET /api/download-status/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:33:52,157 - INFO - Progress hook finished for job 88702935-950a-49ab-bb5f-10ce681c4405: C:\Users\WELCOME\AppData\Local\Temp\ytdl_l7hte8ys\Shubh - Bars (Official Music Video).webm
+2025-10-23 13:33:52,800 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:52] "GET /api/download-status/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:33:55,117 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:55] "GET /api/download-status/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:33:56,272 - INFO - Job 88702935-950a-49ab-bb5f-10ce681c4405 - download completed: C:\Users\WELCOME\AppData\Local\Temp\ytdl_l7hte8ys\Shubh - Bars (Official Music Video).mp3
+2025-10-23 13:33:56,800 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:56] "GET /api/download-status/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:33:57,819 - INFO - 127.0.0.1 - - [23/Oct/2025 13:33:57] "GET /api/download-file/88702935-950a-49ab-bb5f-10ce681c4405 HTTP/1.1" 200 -
+2025-10-23 13:34:07,920 - INFO - CAPTCHA verification successful for ID: 816056d3-e20d-48c6-a80f-493b13ccacb9, session: 46cfac80-a126-4d8f-96ba-90a46bf2a41b
+2025-10-23 13:34:07,920 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:07] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 13:34:15,521 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:15] "POST /api/video-info HTTP/1.1" 200 -
+2025-10-23 13:34:21,572 - INFO - Session token 46cfac80-a126-4d8f-96ba-90a46bf2a41b consumed for job 772f50cb-f5ef-4a53-aefd-5ed26b11d130
+2025-10-23 13:34:21,574 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:21] "POST /api/download HTTP/1.1" 200 -
+2025-10-23 13:34:21,590 - INFO - Generated CAPTCHA: 6856 with ID: a387e83c-44f8-4ca4-aa7d-c9458f27c572
+2025-10-23 13:34:21,591 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:21] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 13:34:21,615 - INFO - Job 772f50cb-f5ef-4a53-aefd-5ed26b11d130 - temp_dir: C:\Users\WELCOME\AppData\Local\Temp\ytdl_jbmvfcdc - ffmpeg_available: True
+2025-10-23 13:34:21,615 - INFO - Job 772f50cb-f5ef-4a53-aefd-5ed26b11d130 - video format option set to: bestvideo[height<=2160]+bestaudio/best[height<=2160]
+2025-10-23 13:34:24,104 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:24] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:26,114 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:26] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:28,113 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:28] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:30,113 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:30] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:32,113 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:32] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:34,113 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:34] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:36,111 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:36] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:38,111 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:38] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:40,105 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:40] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:42,116 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:42] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:44,112 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:44] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:46,105 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:46] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:48,118 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:48] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:50,117 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:50] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:52,107 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:52] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:54,108 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:54] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:56,104 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:56] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:57,586 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:57] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:34:59,585 - INFO - 127.0.0.1 - - [23/Oct/2025 13:34:59] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:01,589 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:01] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:04,104 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:04] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:05,785 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:05] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:07,581 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:07] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:10,105 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:10] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:12,118 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:12] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:14,106 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:14] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:16,106 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:16] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:18,111 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:18] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:20,106 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:20] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:22,110 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:22] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:24,118 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:24] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:26,103 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:26] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:28,109 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:28] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:30,107 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:30] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:32,107 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:32] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:34,105 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:34] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:36,112 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:36] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:38,138 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:38] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:40,105 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:40] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:42,115 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:42] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:44,117 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:44] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:46,106 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:46] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:48,105 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:48] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:50,104 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:50] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:52,117 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:52] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:54,148 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:54] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:56,104 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:56] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:35:58,117 - INFO - 127.0.0.1 - - [23/Oct/2025 13:35:58] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:36:00,103 - INFO - 127.0.0.1 - - [23/Oct/2025 13:36:00] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:36:02,111 - INFO - 127.0.0.1 - - [23/Oct/2025 13:36:02] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:36:04,107 - INFO - 127.0.0.1 - - [23/Oct/2025 13:36:04] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:36:06,107 - INFO - 127.0.0.1 - - [23/Oct/2025 13:36:06] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:37:01,114 - INFO - 127.0.0.1 - - [23/Oct/2025 13:37:01] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:37:14,412 - INFO - Progress hook finished for job 772f50cb-f5ef-4a53-aefd-5ed26b11d130: C:\Users\WELCOME\AppData\Local\Temp\ytdl_jbmvfcdc\Shubh - Bars (Official Music Video).f401.mp4
+2025-10-23 13:37:16,966 - INFO - Progress hook finished for job 772f50cb-f5ef-4a53-aefd-5ed26b11d130: C:\Users\WELCOME\AppData\Local\Temp\ytdl_jbmvfcdc\Shubh - Bars (Official Music Video).f251.webm
+2025-10-23 13:37:19,251 - INFO - Job 772f50cb-f5ef-4a53-aefd-5ed26b11d130 - download completed: C:\Users\WELCOME\AppData\Local\Temp\ytdl_jbmvfcdc\Shubh - Bars (Official Music Video).webm
+2025-10-23 13:38:01,109 - INFO - 127.0.0.1 - - [23/Oct/2025 13:38:01] "GET /api/download-status/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:38:03,126 - INFO - 127.0.0.1 - - [23/Oct/2025 13:38:03] "GET /api/download-file/772f50cb-f5ef-4a53-aefd-5ed26b11d130 HTTP/1.1" 200 -
+2025-10-23 13:38:57,821 - INFO - Scheduled cleanup removed C:\Users\WELCOME\AppData\Local\Temp\ytdl_l7hte8ys for job 88702935-950a-49ab-bb5f-10ce681c4405
+2025-10-23 13:43:03,171 - INFO - Scheduled cleanup removed C:\Users\WELCOME\AppData\Local\Temp\ytdl_jbmvfcdc for job 772f50cb-f5ef-4a53-aefd-5ed26b11d130
+2025-10-23 14:00:51,321 - INFO - FFmpeg available - full functionality enabled.
+2025-10-23 14:00:51,322 - INFO - CAPTCHA image system initialized with Pillow
+2025-10-23 14:00:51,361 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.16.22.165:5000
+2025-10-23 14:00:51,362 - INFO - [33mPress CTRL+C to quit[0m
+2025-10-23 14:00:55,746 - INFO - 127.0.0.1 - - [23/Oct/2025 14:00:55] "GET / HTTP/1.1" 200 -
+2025-10-23 14:00:55,881 - INFO - Generated CAPTCHA: 4874 with ID: c72d9966-ed31-416b-892e-837040faf286
+2025-10-23 14:00:55,883 - INFO - 127.0.0.1 - - [23/Oct/2025 14:00:55] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 14:00:55,884 - INFO - 127.0.0.1 - - [23/Oct/2025 14:00:55] "GET /api/ffmpeg-status HTTP/1.1" 200 -
+2025-10-23 14:01:06,861 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:06] "POST /api/video-info HTTP/1.1" 200 -
+2025-10-23 14:01:19,189 - INFO - CAPTCHA verification successful for ID: c72d9966-ed31-416b-892e-837040faf286, session: 937febe6-1ff5-4d16-a51f-d276392abc5a
+2025-10-23 14:01:19,190 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:19] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 14:01:35,758 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:35] "POST /api/video-info HTTP/1.1" 200 -
+2025-10-23 14:01:46,060 - INFO - Session token 937febe6-1ff5-4d16-a51f-d276392abc5a consumed for job f78ff96b-c89e-4d15-9236-620bec45d129
+2025-10-23 14:01:46,061 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:46] "POST /api/download HTTP/1.1" 200 -
+2025-10-23 14:01:46,083 - INFO - Generated CAPTCHA: 1199 with ID: 8cd1fe43-20b2-40a5-9498-c3a308abcad0
+2025-10-23 14:01:46,085 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:46] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 14:01:46,109 - INFO - Job f78ff96b-c89e-4d15-9236-620bec45d129 - temp_dir: C:\Users\WELCOME\AppData\Local\Temp\ytdl_0mzbc39w - ffmpeg_available: True
+2025-10-23 14:01:46,110 - INFO - Job f78ff96b-c89e-4d15-9236-620bec45d129 - video format option set to: bestvideo[height<=2160]+bestaudio/best[height<=2160]
+2025-10-23 14:01:48,117 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:48] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:01:50,109 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:50] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:01:52,114 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:52] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:01:54,117 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:54] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:01:56,112 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:56] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:01:58,106 - INFO - 127.0.0.1 - - [23/Oct/2025 14:01:58] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:00,113 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:00] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:02,076 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:02] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:04,078 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:04] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:06,107 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:06] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:08,074 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:08] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:10,107 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:10] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:12,113 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:12] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:14,074 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:14] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:16,074 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:16] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:18,075 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:18] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:20,074 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:20] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:22,077 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:22] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:24,075 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:24] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:26,076 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:26] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:28,075 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:28] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:30,112 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:30] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:32,104 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:32] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:34,102 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:34] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:36,101 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:36] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:38,112 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:38] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:40,078 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:40] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:42,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:42] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:44,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:44] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:46,103 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:46] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:48,073 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:48] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:50,109 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:50] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:52,077 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:52] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:54,073 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:54] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:56,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:56] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:02:58,073 - INFO - 127.0.0.1 - - [23/Oct/2025 14:02:58] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:00,085 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:00] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:02,070 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:02] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:04,073 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:04] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:06,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:06] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:08,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:08] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:10,073 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:10] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:12,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:12] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:14,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:14] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:16,108 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:16] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:18,112 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:18] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:20,114 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:20] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:22,106 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:22] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:24,108 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:24] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:26,106 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:26] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:28,107 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:28] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:30,107 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:30] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:32,080 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:32] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:34,084 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:34] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:36,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:36] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:38,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:38] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:40,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:40] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:42,076 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:42] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:44,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:44] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:46,074 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:46] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:48,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:48] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:50,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:50] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:52,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:52] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:54,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:54] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:56,076 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:56] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:03:58,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:03:58] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:00,078 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:00] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:02,075 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:02] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:04,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:04] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:06,073 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:06] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:08,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:08] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:10,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:10] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:12,073 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:12] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:14,077 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:14] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:16,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:16] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:18,076 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:18] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:20,072 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:20] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:22,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:22] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:24,077 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:24] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:26,076 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:26] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:28,070 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:28] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:30,070 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:30] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:30,977 - INFO - Progress hook finished for job f78ff96b-c89e-4d15-9236-620bec45d129: C:\Users\WELCOME\AppData\Local\Temp\ytdl_0mzbc39w\Shubh - Bars (Official Music Video).f401.mp4
+2025-10-23 14:04:32,070 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:32] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:32,507 - INFO - Progress hook finished for job f78ff96b-c89e-4d15-9236-620bec45d129: C:\Users\WELCOME\AppData\Local\Temp\ytdl_0mzbc39w\Shubh - Bars (Official Music Video).f251.webm
+2025-10-23 14:04:34,071 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:34] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:34,577 - INFO - Job f78ff96b-c89e-4d15-9236-620bec45d129 - download completed: C:\Users\WELCOME\AppData\Local\Temp\ytdl_0mzbc39w\Shubh - Bars (Official Music Video).webm
+2025-10-23 14:04:36,076 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:36] "GET /api/download-status/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:04:37,094 - INFO - 127.0.0.1 - - [23/Oct/2025 14:04:37] "GET /api/download-file/f78ff96b-c89e-4d15-9236-620bec45d129 HTTP/1.1" 200 -
+2025-10-23 14:06:49,884 - INFO - Cleaned up 1 expired CAPTCHAs and 0 expired sessions
+2025-10-23 14:06:49,884 - WARNING - CAPTCHA verification failed: ID 8cd1fe43-20b2-40a5-9498-c3a308abcad0 not found
+2025-10-23 14:06:49,884 - INFO - 127.0.0.1 - - [23/Oct/2025 14:06:49] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 14:06:49,900 - INFO - Generated CAPTCHA: 6249 with ID: ad28ace5-7cf9-4d14-8ea5-0d49237a98ce
+2025-10-23 14:06:49,901 - INFO - 127.0.0.1 - - [23/Oct/2025 14:06:49] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 14:06:54,470 - INFO - CAPTCHA verification successful for ID: ad28ace5-7cf9-4d14-8ea5-0d49237a98ce, session: 7e80b619-90d5-4ade-b758-5d8ef16fb1ea
+2025-10-23 14:06:54,471 - INFO - 127.0.0.1 - - [23/Oct/2025 14:06:54] "POST /api/verify-captcha HTTP/1.1" 200 -
+2025-10-23 14:07:06,810 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:06] "POST /api/video-info HTTP/1.1" 200 -
+2025-10-23 14:07:14,422 - INFO - Session token 7e80b619-90d5-4ade-b758-5d8ef16fb1ea consumed for job 1d8c7e04-1d43-4048-a144-0ba8578c2984
+2025-10-23 14:07:14,423 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:14] "POST /api/download HTTP/1.1" 200 -
+2025-10-23 14:07:14,441 - INFO - Generated CAPTCHA: 1300 with ID: c356c599-c470-4950-9aa7-b1c51bba90c6
+2025-10-23 14:07:14,442 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:14] "GET /api/generate-captcha HTTP/1.1" 200 -
+2025-10-23 14:07:14,464 - INFO - Job 1d8c7e04-1d43-4048-a144-0ba8578c2984 - temp_dir: C:\Users\WELCOME\AppData\Local\Temp\ytdl_zjqut06j - ffmpeg_available: True
+2025-10-23 14:07:14,464 - INFO - Job 1d8c7e04-1d43-4048-a144-0ba8578c2984 - audio conversion via ffmpeg -> mp3
+2025-10-23 14:07:16,432 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:16] "GET /api/download-status/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:07:19,106 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:19] "GET /api/download-status/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:07:21,113 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:21] "GET /api/download-status/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:07:23,153 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:23] "GET /api/download-status/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:07:25,109 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:25] "GET /api/download-status/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:07:26,977 - INFO - Progress hook finished for job 1d8c7e04-1d43-4048-a144-0ba8578c2984: C:\Users\WELCOME\AppData\Local\Temp\ytdl_zjqut06j\Shubh - Bars (Official Music Video).webm
+2025-10-23 14:07:27,111 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:27] "GET /api/download-status/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:07:29,106 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:29] "GET /api/download-status/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:07:30,864 - INFO - Job 1d8c7e04-1d43-4048-a144-0ba8578c2984 - download completed: C:\Users\WELCOME\AppData\Local\Temp\ytdl_zjqut06j\Shubh - Bars (Official Music Video).mp3
+2025-10-23 14:07:31,104 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:31] "GET /api/download-status/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:07:33,120 - INFO - 127.0.0.1 - - [23/Oct/2025 14:07:33] "GET /api/download-file/1d8c7e04-1d43-4048-a144-0ba8578c2984 HTTP/1.1" 200 -
+2025-10-23 14:09:37,137 - INFO - Scheduled cleanup removed C:\Users\WELCOME\AppData\Local\Temp\ytdl_0mzbc39w for job f78ff96b-c89e-4d15-9236-620bec45d129
