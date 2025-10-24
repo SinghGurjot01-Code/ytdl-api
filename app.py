@@ -261,7 +261,7 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
     """Get yt-dlp options with retry, anti-bot measures, and optional cookies"""
     base_opts = {
         'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
-        'cookies': 'cookies.txt',
+        'cookiesfrombrowser': ('chrome',),
         'progress_hooks': [progress_hook_factory(job_id)],
         'restrictfilenames': False,
         'quiet': True,
@@ -905,5 +905,6 @@ if __name__ == '__main__':
     
 
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
 
