@@ -24,6 +24,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Setup logging
+os.makedirs('logs', exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -67,8 +68,7 @@ class DownloadProgress:
         self.temp_dir = ''
         self.ffmpeg_available = False
         self.title = ''
-        self.completed = False  # Prevent race conditions
-        # New progress tracking fields
+        self.completed = False
         self.downloaded_bytes = 0
         self.total_bytes = 0
         self.speed = 0
@@ -135,11 +135,10 @@ def progress_hook_factory(job_id):
                 try:
                     if isinstance(p, str):
                         p = p.strip().strip('%')
-                    job.progress = min(float(p), 99.9)  # Cap at 99.9 until truly complete
+                    job.progress = min(float(p), 99.9)
                 except Exception:
                     pass
             elif d.get('total_bytes') and d.get('downloaded_bytes'):
-                # Calculate percentage from bytes if percent not available
                 try:
                     total = d.get('total_bytes') or d.get('total_bytes_estimate', 0)
                     downloaded = d.get('downloaded_bytes', 0)
@@ -148,7 +147,6 @@ def progress_hook_factory(job_id):
                 except Exception:
                     pass
             
-            # Update new progress tracking fields
             job.downloaded_bytes = d.get('downloaded_bytes', 0)
             job.total_bytes = d.get('total_bytes') or d.get('total_bytes_estimate', 0)
             job.speed = d.get('speed', 0)
@@ -156,8 +154,7 @@ def progress_hook_factory(job_id):
             
         elif status == 'finished':
             if not job.completed:
-                job.progress = 99.9  # Almost complete, final file selection pending
-                # Set final values when download finishes
+                job.progress = 99.9
                 job.downloaded_bytes = job.total_bytes
                 job.speed = 0
                 job.eta = 0
@@ -192,13 +189,11 @@ def find_final_file_in_dir(temp_dir, title_hint=None):
     if not files:
         return None
     
-    # Filter out part files
     files = [f for f in files if not f.endswith('.part')]
     
     if not files:
         return None
     
-    # If title hint provided, try to match
     if title_hint:
         normalized = title_hint.replace('/', '_').strip()
         matches = [f for f in files if os.path.basename(f).startswith(normalized)]
@@ -206,7 +201,6 @@ def find_final_file_in_dir(temp_dir, title_hint=None):
             matches.sort(key=lambda p: os.path.getsize(p) if os.path.exists(p) else 0, reverse=True)
             return matches[0]
     
-    # Fallback: return biggest file
     files.sort(key=lambda p: os.path.getsize(p) if os.path.exists(p) else 0, reverse=True)
     return files[0]
 
@@ -215,12 +209,10 @@ def validate_format_string(format_str):
     if not format_str or not isinstance(format_str, str):
         return False
     
-    # Allow only safe characters and yt-dlp format syntax
     allowed_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]+=/<>:,._-')
     if not all(c in allowed_chars for c in format_str):
         return False
     
-    # Must not be too long
     if len(format_str) > 200:
         return False
     
@@ -234,6 +226,9 @@ def get_available_formats(url):
             'no_warnings': True,
             'skip_download': True,
         }
+        if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
+            ydl_opts['cookiefile'] = YTDL_COOKIES_PATH
+        
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             return info.get('formats', []) if isinstance(info, dict) else []
@@ -250,14 +245,13 @@ def is_format_available(formats, requested_format):
             'skip_download': True,
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Try to process the format to see if it's available
             ydl.build_format_selector(requested_format)
             return True
     except Exception:
         return False
 
 def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_available):
-    """Get yt-dlp options with retry, anti-bot measures, and optional cookies"""
+    """Get yt-dlp options with retry, anti-bot measures, and cookies"""
     base_opts = {
         'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
         'progress_hooks': [progress_hook_factory(job_id)],
@@ -266,12 +260,11 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         'no_warnings': True,
         'nopart': False,
         'noplaylist': True,
-        'extractor_retries': 3,
-        'retries': 10,
-        'fragment_retries': 10,
+        'extractor_retries': 5,
+        'retries': 15,
+        'fragment_retries': 15,
         'skip_unavailable_fragments': True,
         'continuedl': True,
-        'throttled_rate': None,
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -281,30 +274,32 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         },
     }
 
-    # Enhanced anti-bot and authentication measures
+    # CRITICAL: Use cookies file if available
+    if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
+        base_opts['cookiefile'] = YTDL_COOKIES_PATH
+        logger.info("✅ Using cookies file: %s for job %s", YTDL_COOKIES_PATH, job_id)
+    else:
+        logger.warning("⚠️ No cookies file found at %s - may encounter bot detection", YTDL_COOKIES_PATH)
+        try:
+            base_opts['cookiesfrombrowser'] = ('chrome',)
+            logger.info("Attempting to use browser cookies as fallback")
+        except Exception:
+            pass
+
     anti_bot_opts = {
-        # Use cookies from browser if available
-        'cookiesfrombrowser': ('chrome',),
-        # Additional extractor options for age-restricted content
         'extract_flat': False,
         'ignoreerrors': False,
-        # Rate limiting
-        'ratelimit': 1048576,  # 1 MB/s
-        'throttledratelimit': 524288,  # 512 KB/s
-        # Retry configuration
+        'sleep_interval': 1,
+        'max_sleep_interval': 5,
+        'sleep_interval_requests': 1,
         'retry_sleep_functions': {
-            'http': lambda n: 2 ** min(n, 5),
-            'fragment': lambda n: 2 ** min(n, 5),
+            'http': lambda n: min(2 ** n, 10),
+            'fragment': lambda n: min(2 ** n, 10),
+            'extractor': lambda n: min(2 ** n, 10),
         }
     }
     base_opts.update(anti_bot_opts)
 
-    # Use cookies file if environment variable is set
-    if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
-        base_opts['cookiefile'] = YTDL_COOKIES_PATH
-        logger.info("Using cookies file: %s", YTDL_COOKIES_PATH)
-
-    # Choose format options
     try:
         if file_ext == 'mp3':
             if ffmpeg_available:
@@ -330,15 +325,19 @@ def handle_download_error(job, job_id, error, retry_count, max_retries):
     error_msg = str(error)
     logger.warning("Job %s - DownloadError (attempt %d/%d): %s", job_id, retry_count + 1, max_retries, error_msg)
     
-    # Check for specific errors that shouldn't be retried
+    if "sign in to confirm" in error_msg.lower() or "confirm you're not a bot" in error_msg.lower():
+        job.status = 'error'
+        job.error = '🤖 Bot detection triggered. Please ensure cookies.txt is uploaded and YTDL_COOKIES_PATH is configured correctly.'
+        job.completed = True
+        logger.error("❌ Bot detection error - cookies may be missing or invalid")
+        return False
+    
     non_retryable_errors = [
         "Requested format is not available",
         "Private video", 
         "Video unavailable",
-        "Sign in to confirm",
         "This video is not available",
         "No video formats found",
-        "Video unavailable",
         "This video is private"
     ]
     
@@ -351,14 +350,11 @@ def handle_download_error(job, job_id, error, retry_count, max_retries):
                 job.error = 'This video is private and cannot be downloaded.'
             elif "video unavailable" in error_msg.lower():
                 job.error = 'This video is unavailable.'
-            elif "sign in to confirm" in error_msg.lower():
-                job.error = 'This video requires age verification and cannot be downloaded.'
             else:
                 job.error = f'Download failed: {error_msg}'
             job.completed = True
-            return False  # Don't retry
+            return False
     
-    # For 403/429/age-restricted errors, wait and retry with different options
     retryable_errors = [
         "http error 403",
         "http error 429", 
@@ -372,18 +368,17 @@ def handle_download_error(job, job_id, error, retry_count, max_retries):
         if msg in error_msg.lower():
             retry_count += 1
             if retry_count < max_retries:
-                wait_time = 2 ** retry_count  # Exponential backoff
+                wait_time = min(2 ** retry_count, 30)
                 logger.info("Job %s - %s error, waiting %d seconds before retry %d", 
                            job_id, msg.upper(), wait_time, retry_count)
                 time.sleep(wait_time)
-                return True  # Retry
+                return True
             else:
                 job.status = 'error'
-                job.error = 'YouTube is blocking downloads. Please try again later or use a different video.'
+                job.error = 'YouTube is blocking downloads. Please ensure cookies are properly configured.'
                 job.completed = True
-                return False  # Don't retry
+                return False
     
-    # Other download errors - don't retry
     job.status = 'error'
     job.error = f'Download failed: {error_msg}'
     job.completed = True
@@ -400,7 +395,6 @@ def download_worker(url, format_str, file_ext, job_id):
     job.ffmpeg_available = check_ffmpeg()
     logger.info("Job %s - temp_dir: %s - ffmpeg_available: %s", job_id, temp_dir, job.ffmpeg_available)
 
-    # Start download
     job.status = 'downloading'
     job.progress = 0.0
     job.downloaded_bytes = 0
@@ -421,17 +415,13 @@ def download_worker(url, format_str, file_ext, job_id):
                 if title:
                     job.title = title
 
-                # Give postprocessing a moment to complete
                 time.sleep(1)
 
-                # Find final file
                 final = None
                 
-                # 1) Check progress hook filename
                 if job.filename and os.path.exists(job.filename):
                     final = job.filename
 
-                # 2) Try prepare_filename
                 if not final:
                     try:
                         if isinstance(info, dict):
@@ -441,13 +431,11 @@ def download_worker(url, format_str, file_ext, job_id):
                     except Exception:
                         pass
 
-                # 3) Search temp dir
                 if not final:
                     candidate = find_final_file_in_dir(temp_dir, title_hint=job.title)
                     if candidate:
                         final = candidate
 
-                # 4) Check requested_downloads
                 if not final and isinstance(info, dict):
                     req = info.get('requested_downloads')
                     if req and isinstance(req, list):
@@ -464,7 +452,6 @@ def download_worker(url, format_str, file_ext, job_id):
                     job.progress = 100.0
                     job.completed = True
                     
-                    # Set final file size
                     try:
                         file_size = os.path.getsize(final)
                         job.downloaded_bytes = file_size
@@ -472,24 +459,23 @@ def download_worker(url, format_str, file_ext, job_id):
                     except Exception:
                         pass
                     
-                    # Validate file size (lowered threshold)
                     try:
                         size = os.path.getsize(final)
-                        if size < 100:  # Less than 100 bytes is suspicious
+                        if size < 100:
                             job.status = 'error'
                             job.error = 'Downloaded file is too small or corrupted'
                             logger.error("Job %s - file too small: %s (%d bytes)", job_id, final, size)
                     except Exception as e:
                         logger.error("Job %s - error checking file size: %s", job_id, e)
                     
-                    logger.info("Job %s - download completed: %s", job_id, final)
-                    break  # Success, exit retry loop
+                    logger.info("✅ Job %s - download completed: %s", job_id, final)
+                    break
                 else:
                     job.status = 'error'
                     job.error = 'Could not determine final output filename'
                     job.completed = True
                     logger.error("Job %s - final file not found in %s", job_id, temp_dir)
-                    break  # File not found error, don't retry
+                    break
 
         except yt_dlp.utils.DownloadError as e:
             should_retry = handle_download_error(job, job_id, e, retry_count, max_retries)
@@ -511,7 +497,6 @@ def download_worker(url, format_str, file_ext, job_id):
                 job.completed = True
                 break
 
-    # Cleanup if job failed
     if job.status == 'error' and job.temp_dir and os.path.exists(job.temp_dir):
         try:
             shutil.rmtree(job.temp_dir)
@@ -547,7 +532,6 @@ def generate_captcha_image(captcha_code):
         except Exception:
             font = ImageFont.load_default()
         
-        # Background noise
         for _ in range(15):
             x1 = random.randint(0, width)
             y1 = random.randint(0, height)
@@ -557,7 +541,6 @@ def generate_captcha_image(captcha_code):
                         fill=(random.randint(200, 255), random.randint(200, 255), random.randint(200, 255)),
                         outline=(random.randint(180, 220), random.randint(180, 220), random.randint(180, 220)))
         
-        # Lines
         for _ in range(8):
             x1 = random.randint(0, width)
             y1 = random.randint(0, height)
@@ -567,7 +550,6 @@ def generate_captcha_image(captcha_code):
                      fill=(random.randint(150, 200), random.randint(150, 200), random.randint(150, 200)), 
                      width=random.randint(1, 3))
         
-        # Dots
         for _ in range(150):
             x = random.randint(0, width)
             y = random.randint(0, height)
@@ -575,7 +557,6 @@ def generate_captcha_image(captcha_code):
             draw.ellipse([(x, y), (x + radius, y + radius)], 
                         fill=(random.randint(200, 255), random.randint(200, 255), random.randint(200, 255)))
         
-        # Text
         text_bbox = draw.textbbox((0, 0), captcha_code, font=font)
         text_width = text_bbox[2] - text_bbox[0]
         text_height = text_bbox[3] - text_bbox[1]
@@ -676,11 +657,10 @@ def verify_captcha():
         is_valid = user_input == captcha_data['code']
         
         if is_valid:
-            # Create a session token for this verified CAPTCHA
             session_token = str(uuid.uuid4())
             verified_sessions[session_token] = {
                 'verified_at': datetime.now(),
-                'expires': datetime.now() + timedelta(minutes=10)  # Session valid for 10 minutes
+                'expires': datetime.now() + timedelta(minutes=10)
             }
             captcha_store.pop(captcha_id, None)
             logger.info("CAPTCHA verification successful for ID: %s, session: %s", captcha_id, session_token)
@@ -698,7 +678,6 @@ def cleanup_expired_captchas():
     try:
         now = datetime.now()
         
-        # Clean up CAPTCHAs
         expired_keys = [
             key for key, data in captcha_store.items() 
             if now > data['expires']
@@ -706,7 +685,6 @@ def cleanup_expired_captchas():
         for key in expired_keys:
             captcha_store.pop(key, None)
         
-        # Clean up sessions
         expired_sessions = [
             key for key, data in verified_sessions.items()
             if now > data['expires']
@@ -739,6 +717,9 @@ def get_video_info():
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             },
         }
+        if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
+            ydl_opts['cookiefile'] = YTDL_COOKIES_PATH
+        
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
             formats = []
@@ -777,34 +758,28 @@ def download_video():
     if not url or not format_str:
         return jsonify({'error': 'URL and format are required'}), 400
     
-    # Validate session token
     if not session_token or session_token not in verified_sessions:
         logger.warning("Download attempt without valid session token")
         return jsonify({'error': 'CAPTCHA verification required'}), 403
     
-    # Check if session is expired
     session_data = verified_sessions[session_token]
     if datetime.now() > session_data['expires']:
         verified_sessions.pop(session_token, None)
         logger.warning("Download attempt with expired session token")
         return jsonify({'error': 'CAPTCHA session expired'}), 403
     
-    # Validate format string
     if not validate_format_string(format_str):
         logger.warning("Invalid format string rejected: %s", format_str)
         return jsonify({'error': 'Invalid format specification'}), 400
     
-    # Validate file extension
     allowed_extensions = ['mp4', 'mp3']
     if file_ext not in allowed_extensions:
         return jsonify({'error': f'Invalid file extension. Allowed: {", ".join(allowed_extensions)}'}), 400
 
-    # Check if format is likely available
     try:
         formats = get_available_formats(url)
         if formats and not is_format_available(formats, format_str):
             logger.warning("Format %s may not be available for URL: %s", format_str, url)
-            # We'll still try, but log the warning
     except Exception as e:
         logger.warning("Could not check format availability: %s", e)
 
@@ -812,11 +787,9 @@ def download_video():
     download_status[job_id] = DownloadProgress()
     download_status[job_id].ffmpeg_available = check_ffmpeg()
 
-    # Invalidate session token after use (one download per verification)
     verified_sessions.pop(session_token, None)
     logger.info("Session token %s consumed for job %s", session_token, job_id)
 
-    # Start background thread
     t = threading.Thread(target=download_worker, args=(url, format_str, file_ext, job_id), daemon=True)
     t.start()
 
@@ -828,7 +801,6 @@ def get_download_status(job_id):
     if job is None:
         return jsonify({'error': 'Download job not found'}), 404
     
-    # Prepare response with all progress data
     response_data = {
         'status': job.status,
         'progress': job.progress,
@@ -836,12 +808,10 @@ def get_download_status(job_id):
         'error': job.error,
         'ffmpeg_available': job.ffmpeg_available,
         'temp_dir': job.temp_dir,
-        # New progress tracking fields
         'downloaded_bytes': job.downloaded_bytes,
         'total_bytes': job.total_bytes,
         'speed': job.speed,
         'eta': job.eta,
-        # Formatted values for frontend display
         'downloaded_mb': bytes_to_mb(job.downloaded_bytes),
         'total_mb': bytes_to_mb(job.total_bytes),
         'speed_mb': bytes_to_mb(job.speed),
@@ -878,9 +848,8 @@ def download_file(job_id):
 
     abs_path = os.path.abspath(filename)
 
-    # Schedule cleanup
     def schedule_cleanup_job(job_id_inner):
-        time.sleep(300)  # Wait 5 minutes
+        time.sleep(300)
         j = safe_get_job(job_id_inner)
         if j and j.temp_dir and os.path.exists(j.temp_dir):
             try:
@@ -902,7 +871,6 @@ def cleanup_old_files():
     for jid, job in list(download_status.items()):
         try:
             if job.temp_dir and os.path.exists(job.temp_dir):
-                # Check modification time
                 mtime = os.path.getmtime(job.temp_dir)
                 if mtime < one_hour_ago:
                     try:
@@ -921,14 +889,23 @@ def schedule_cleanup():
 
 @app.route('/')
 def health_check():
-    """Simple health check endpoint for Render and monitoring"""
+    """Health check endpoint with cookie status"""
+    cookie_status = "✅ Configured" if (YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH)) else "❌ Not found"
+    
     return jsonify({
         'status': 'healthy',
         'service': 'YTDL API Server',
-        'timestamp': datetime.now().isoformat()
+        'timestamp': datetime.now().isoformat(),
+        'cookies_configured': bool(YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH)),
+        'cookies_path': YTDL_COOKIES_PATH or 'Not set',
+        'ffmpeg_available': check_ffmpeg()
     })
 
 if __name__ == '__main__':
+    print("\n" + "="*60)
+    print("🚀 YTDL API Server Starting...")
+    print("="*60)
+    
     ffmpeg_available = check_ffmpeg()
     if not ffmpeg_available:
         logger.warning("FFmpeg not found - some features will be limited.")
@@ -945,13 +922,25 @@ if __name__ == '__main__':
         print("⚠️  Pillow not found - CAPTCHA will use text fallback")
         logger.warning("Pillow not found - CAPTCHA will use text fallback")
 
+    if YTDL_COOKIES_PATH:
+        if os.path.exists(YTDL_COOKIES_PATH):
+            print(f"✅ Cookies file found: {YTDL_COOKIES_PATH}")
+            logger.info("✅ Cookies file configured and found: %s", YTDL_COOKIES_PATH)
+        else:
+            print(f"❌ Cookies file NOT found at: {YTDL_COOKIES_PATH}")
+            print("   Please upload cookies.txt to fix bot detection errors!")
+            logger.error("❌ YTDL_COOKIES_PATH set but file not found: %s", YTDL_COOKIES_PATH)
+    else:
+        print("❌ YTDL_COOKIES_PATH not set in environment variables")
+        print("   Bot detection errors are likely - please configure cookies!")
+        logger.warning("❌ YTDL_COOKIES_PATH environment variable not set")
+
     schedule_cleanup()
 
-    # Use PORT environment variable for Render compatibility
     port = int(os.environ.get('PORT', 5000))
     
-    print(f"✅ YTDL API Server starting on port {port}")
+    print(f"\n✅ YTDL API Server starting on port {port}")
+    print("="*60 + "\n")
     logger.info(f"YTDL API Server starting on port {port}")
     
-
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
