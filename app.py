@@ -256,8 +256,8 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
         'progress_hooks': [progress_hook_factory(job_id)],
         'restrictfilenames': False,
-        'quiet': True,
-        'no_warnings': True,
+        'quiet': False,  # Changed to see detailed errors
+        'no_warnings': False,  # Changed to see warnings
         'nopart': False,
         'noplaylist': True,
         'extractor_retries': 5,
@@ -274,15 +274,27 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         },
     }
 
-    # CRITICAL: Use cookies file if available
-    if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
-        base_opts['cookiefile'] = YTDL_COOKIES_PATH
-        logger.info("✅ Using cookies file: %s for job %s", YTDL_COOKIES_PATH, job_id)
-    else:
-        logger.warning("⚠️ No cookies file found at %s - may encounter bot detection", YTDL_COOKIES_PATH)
+    # CRITICAL: Use cookies file if available - try multiple approaches
+    cookies_loaded = False
+    
+    if YTDL_COOKIES_PATH:
+        if os.path.exists(YTDL_COOKIES_PATH):
+            try:
+                # Method 1: Try loading cookies directly
+                base_opts['cookiefile'] = YTDL_COOKIES_PATH
+                logger.info("✅ Set cookies file path: %s for job %s", YTDL_COOKIES_PATH, job_id)
+                cookies_loaded = True
+            except Exception as e:
+                logger.error("Failed to set cookiefile: %s", e)
+        else:
+            logger.error("❌ Cookies file not found at: %s", YTDL_COOKIES_PATH)
+    
+    if not cookies_loaded:
+        logger.warning("⚠️ No cookies loaded - trying browser fallback")
+        # Try to use browser cookies as absolute last resort
         try:
+            # This won't work on most servers but worth a try
             base_opts['cookiesfrombrowser'] = ('chrome',)
-            logger.info("Attempting to use browser cookies as fallback")
         except Exception:
             pass
 
@@ -710,8 +722,8 @@ def get_video_info():
         return jsonify({'error': 'URL is required'}), 400
     try:
         ydl_opts = {
-            'quiet': True,
-            'no_warnings': True,
+            'quiet': False,  # Enable output to see errors
+            'no_warnings': False,
             'skip_download': True,
             'http_headers': {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -719,6 +731,7 @@ def get_video_info():
         }
         if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
             ydl_opts['cookiefile'] = YTDL_COOKIES_PATH
+            logger.info("Using cookies from: %s", YTDL_COOKIES_PATH)
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -743,7 +756,16 @@ def get_video_info():
             }
             return jsonify(video_info)
     except Exception as e:
-        logger.exception("Error fetching video info: %s", e)
+        error_msg = str(e)
+        logger.exception("Error fetching video info: %s", error_msg)
+        
+        # Check if it's a cookies format issue
+        if "does not look like a Netscape format" in error_msg:
+            return jsonify({
+                'error': 'Cookies file format error. Please re-export cookies using "Get cookies.txt LOCALLY" Chrome extension or use yt-dlp command line.',
+                'details': error_msg
+            }), 500
+        
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/download', methods=['POST'])
@@ -892,14 +914,52 @@ def health_check():
     """Health check endpoint with cookie status"""
     cookie_status = "✅ Configured" if (YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH)) else "❌ Not found"
     
+    # Read first few lines of cookies file for debugging
+    cookie_preview = None
+    if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
+        try:
+            with open(YTDL_COOKIES_PATH, 'r', encoding='utf-8') as f:
+                lines = f.readlines()[:5]  # First 5 lines
+                cookie_preview = ''.join(lines)
+        except Exception as e:
+            cookie_preview = f"Error reading file: {e}"
+    
     return jsonify({
         'status': 'healthy',
         'service': 'YTDL API Server',
         'timestamp': datetime.now().isoformat(),
         'cookies_configured': bool(YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH)),
         'cookies_path': YTDL_COOKIES_PATH or 'Not set',
+        'cookies_preview': cookie_preview,
         'ffmpeg_available': check_ffmpeg()
     })
+
+@app.route('/api/debug-cookies')
+def debug_cookies():
+    """Debug endpoint to check cookies file"""
+    if not YTDL_COOKIES_PATH:
+        return jsonify({'error': 'YTDL_COOKIES_PATH not set'}), 400
+    
+    if not os.path.exists(YTDL_COOKIES_PATH):
+        return jsonify({'error': f'File not found: {YTDL_COOKIES_PATH}'}), 404
+    
+    try:
+        with open(YTDL_COOKIES_PATH, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        lines = content.split('\n')
+        
+        return jsonify({
+            'file_path': YTDL_COOKIES_PATH,
+            'file_size': len(content),
+            'total_lines': len(lines),
+            'first_10_lines': lines[:10],
+            'has_netscape_header': 'Netscape' in content[:200],
+            'has_tabs': '\t' in content,
+            'encoding': 'utf-8'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     print("\n" + "="*60)
