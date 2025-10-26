@@ -18,6 +18,7 @@ import io
 import base64
 import urllib.parse
 import re
+import signal
 
 YTDL_COOKIES_PATH = os.environ.get('YTDL_COOKIES_PATH')
 
@@ -805,108 +806,134 @@ def cleanup_expired_captchas():
 def get_ffmpeg_status():
     return jsonify({'ffmpeg_available': check_ffmpeg()})
 
+class TimeoutException(Exception):
+    pass
+
+def timeout_handler(signum, frame):
+    raise TimeoutException("Video info extraction timed out")
+
+def extract_video_info_with_timeout(url, ydl_opts, timeout_seconds=30):
+    """Extract video info with timeout to prevent hanging"""
+    # Set up timeout handler
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(timeout_seconds)
+    
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            signal.alarm(0)  # Cancel the alarm
+            return info
+    except TimeoutException:
+        logger.error("Video info extraction timed out after %d seconds", timeout_seconds)
+        raise
+    except Exception as e:
+        signal.alarm(0)  # Cancel the alarm on other exceptions
+        raise
+
 @app.route('/api/video-info', methods=['POST'])
 def get_video_info():
     data = request.get_json() or {}
     url = data.get('url')
     if not url:
         return jsonify({'error': 'URL is required'}), 400
+    
     try:
         ydl_opts = {
             'quiet': False,
             'no_warnings': False,
             'skip_download': True,
+            'socket_timeout': 30,
+            'extract_flat': False,
+            'ignoreerrors': False,
+            'no_color': True,
             'http_headers': {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-us,en;q=0.5',
+                'Accept-Encoding': 'gzip,deflate',
+                'Connection': 'keep-alive',
             },
         }
+        
         if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
             cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
             ydl_opts['cookiefile'] = cleaned_cookies if cleaned_cookies else YTDL_COOKIES_PATH
             logger.info("Using cookies from: %s", ydl_opts['cookiefile'])
         
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            formats = []
-            for f in info.get('formats', []) if isinstance(info, dict) else []:
-                if f.get('format_id'):
-                    formats.append({
-                        'format_id': f.get('format_id'),
-                        'ext': f.get('ext', ''),
-                        'resolution': f.get('format_note') or f.get('resolution') or f.get('height'),
-                        'filesize': f.get('filesize') or f.get('filesize_approx'),
-                        'vcodec': f.get('vcodec', 'none'),
-                        'acodec': f.get('acodec', 'none'),
-                    })
-            video_info = {
-                'title': info.get('title', 'Unknown'),
-                'duration': format_duration(info.get('duration', 0)),
-                'thumbnail': info.get('thumbnail', ''),
-                'channel': info.get('uploader', 'Unknown'),
-                'view_count': info.get('view_count', 0),
-                'formats': formats
-            }
-            return jsonify(video_info)
+        # Try with timeout
+        try:
+            info = extract_video_info_with_timeout(url, ydl_opts, timeout_seconds=25)
+        except TimeoutException:
+            logger.error("Video info extraction timed out for URL: %s", url)
+            return jsonify({
+                'error': 'YouTube is taking too long to respond. This video may be heavily restricted. Please try a different video.',
+                'suggestion': 'Try using a video that is publicly available and not age-restricted'
+            }), 408  # 408 Request Timeout
+        
+        formats = []
+        for f in info.get('formats', []) if isinstance(info, dict) else []:
+            if f.get('format_id'):
+                formats.append({
+                    'format_id': f.get('format_id'),
+                    'ext': f.get('ext', ''),
+                    'resolution': f.get('format_note') or f.get('resolution') or f.get('height'),
+                    'filesize': f.get('filesize') or f.get('filesize_approx'),
+                    'vcodec': f.get('vcodec', 'none'),
+                    'acodec': f.get('acodec', 'none'),
+                })
+        
+        video_info = {
+            'title': info.get('title', 'Unknown'),
+            'duration': format_duration(info.get('duration', 0)),
+            'thumbnail': info.get('thumbnail', ''),
+            'channel': info.get('uploader', 'Unknown'),
+            'view_count': info.get('view_count', 0),
+            'formats': formats
+        }
+        
+        # Check if we have any downloadable formats
+        downloadable_formats = [f for f in formats if f.get('vcodec') != 'none' or f.get('acodec') != 'none']
+        if not downloadable_formats:
+            video_info['warning'] = 'No downloadable formats available. This video may be restricted.'
+        
+        return jsonify(video_info)
+        
     except yt_dlp.utils.DownloadError as e:
         error_msg = str(e)
-        logger.exception("Error fetching video info: %s", error_msg)
+        logger.error("DownloadError fetching video info: %s", error_msg)
         
-        # Handle signature extraction and format availability issues
-        if "signature extraction failed" in error_msg.lower() or "requested format is not available" in error_msg.lower():
-            logger.warning("Signature extraction failed or format not available, trying fallback method")
-            # Try with a simpler format that should work
-            try:
-                ydl_opts_fallback = {
-                    'quiet': False,
-                    'no_warnings': False,
-                    'skip_download': True,
-                    'format': 'best[height<=720]',  # Simple format that usually works
-                    'http_headers': {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                    },
-                }
-                if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
-                    cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
-                    ydl_opts_fallback['cookiefile'] = cleaned_cookies if cleaned_cookies else YTDL_COOKIES_PATH
-                
-                with yt_dlp.YoutubeDL(ydl_opts_fallback) as ydl:
-                    info = ydl.extract_info(url, download=False)
-                    formats = []
-                    for f in info.get('formats', []) if isinstance(info, dict) else []:
-                        if f.get('format_id'):
-                            formats.append({
-                                'format_id': f.get('format_id'),
-                                'ext': f.get('ext', ''),
-                                'resolution': f.get('format_note') or f.get('resolution') or f.get('height'),
-                                'filesize': f.get('filesize') or f.get('filesize_approx'),
-                                'vcodec': f.get('vcodec', 'none'),
-                                'acodec': f.get('acodec', 'none'),
-                            })
-                    video_info = {
-                        'title': info.get('title', 'Unknown'),
-                        'duration': format_duration(info.get('duration', 0)),
-                        'thumbnail': info.get('thumbnail', ''),
-                        'channel': info.get('uploader', 'Unknown'),
-                        'view_count': info.get('view_count', 0),
-                        'formats': formats,
-                        'warning': 'Some formats may be unavailable due to YouTube restrictions'
-                    }
-                    return jsonify(video_info)
-            except Exception as fallback_error:
-                logger.error("Fallback method also failed: %s", fallback_error)
-                return jsonify({'error': 'YouTube is restricting access to this video. Please try again later or use a different video.'}), 500
-        
-        if "does not look like a Netscape format" in error_msg:
+        # Handle specific YouTube restrictions
+        if "signature extraction failed" in error_msg.lower():
             return jsonify({
-                'error': 'Cookies file format error. Try re-exporting cookies.',
-                'details': error_msg
-            }), 500
+                'error': 'YouTube signature extraction failed. This video is heavily restricted.',
+                'suggestion': 'Try using a different video or ensure your cookies are properly configured'
+            }), 423  # 423 Locked
         
-        return jsonify({'error': str(e)}), 500
+        elif "requested format is not available" in error_msg.lower():
+            return jsonify({
+                'error': 'No downloadable formats available for this video.',
+                'suggestion': 'This video may be age-restricted, region-locked, or otherwise restricted by YouTube'
+            }), 404
+        
+        elif "video unavailable" in error_msg.lower():
+            return jsonify({
+                'error': 'This video is unavailable.',
+                'suggestion': 'The video may have been removed or made private'
+            }), 404
+        
+        else:
+            return jsonify({
+                'error': 'YouTube is restricting access to this video.',
+                'details': 'Please try a different video or check if the video is publicly available'
+            }), 403
+        
     except Exception as e:
         error_msg = str(e)
         logger.exception("Unexpected error fetching video info: %s", error_msg)
-        return jsonify({'error': 'Failed to fetch video information. Please try again.'}), 500
+        return jsonify({
+            'error': 'Failed to fetch video information.',
+            'suggestion': 'Please try again with a different video URL'
+        }), 500
 
 @app.route('/api/download', methods=['POST'])
 def download_video():
