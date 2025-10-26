@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import io
 import base64
 import urllib.parse
+import re
 
 YTDL_COOKIES_PATH = os.environ.get('YTDL_COOKIES_PATH')
 
@@ -252,28 +253,30 @@ def is_format_available(url, requested_format):
             ydl_opts['cookiefile'] = cleaned_cookies if cleaned_cookies else YTDL_COOKIES_PATH
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            # Try to extract info with the requested format
-            ydl_opts_test = ydl_opts.copy()
-            ydl_opts_test['format'] = requested_format
+            # Get all available formats
+            info = ydl.extract_info(url, download=False)
+            formats = info.get('formats', []) if isinstance(info, dict) else []
             
-            # Create a new ydl instance with the format to test
-            with yt_dlp.YoutubeDL(ydl_opts_test) as ydl_test:
-                info = ydl_test.extract_info(url, download=False)
-                
-                # If we get here without exception, format is available
-                if info and info.get('formats'):
-                    return True
-                    
-        return False
-    except yt_dlp.utils.DownloadError as e:
-        error_msg = str(e).lower()
-        if 'requested format is not available' in error_msg:
-            return False
-        # Other errors should be raised
-        raise
+            # For audio formats, check if any audio format exists
+            if 'bestaudio' in requested_format:
+                audio_formats = [f for f in formats if f.get('acodec') != 'none']
+                return len(audio_formats) > 0
+            
+            # For video formats, check if the requested resolution range is available
+            if 'height<=' in requested_format:
+                height_match = re.search(r'height<=(\d+)', requested_format)
+                if height_match:
+                    max_height = int(height_match.group(1))
+                    video_formats = [f for f in formats if f.get('height') and f.get('height') <= max_height and f.get('vcodec') != 'none']
+                    return len(video_formats) > 0
+            
+            # If we can't parse the format, assume it's available and let yt-dlp handle fallbacks
+            return True
+            
     except Exception as e:
         logger.error("Error checking format availability: %s", e)
-        return False
+        # If we can't check, assume it's available and let the download attempt handle it
+        return True
 
 def clean_cookies_file(cookies_path):
     """Clean and fix cookies file to ensure Netscape format compatibility"""
@@ -405,13 +408,18 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
             else:
                 base_opts['format'] = 'bestaudio/best'
         else:
-            # Add fallback formats for better compatibility
-            # Try requested format first, then fallback to best available
-            fallback_format = f"{format_str}/best[height<=1080]/best"
-            base_opts['format'] = fallback_format
-            logger.info("Using format with fallback: %s", fallback_format)
+            # Use more flexible format selection with better fallbacks
+            if 'bestvideo' in format_str and 'bestaudio' in format_str:
+                # For video+audio combinations, use a more flexible approach
+                base_opts['format'] = f"{format_str}/best[height<=1080]/best"
+            else:
+                base_opts['format'] = format_str
+            
+            logger.info("Job %s - using format: %s", job_id, base_opts['format'])
     except Exception as e:
         logger.exception("Job %s - error building ydl_opts: %s", job_id, e)
+        # Fallback to a safe default
+        base_opts['format'] = 'best[height<=1080]/best'
 
     return base_opts
 
@@ -882,8 +890,8 @@ def download_video():
         return jsonify({'error': f'Invalid file extension. Allowed: {", ".join(allowed_extensions)}'}), 400
 
     try:
-        formats = get_available_formats(url)
-        if formats and not is_format_available(formats, format_str):
+        # Check if format is available, but don't block if check fails
+        if not is_format_available(url, format_str):
             logger.warning("Format %s may not be available for URL: %s", format_str, url)
     except Exception as e:
         logger.warning("Could not check format availability: %s", e)
