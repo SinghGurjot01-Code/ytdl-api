@@ -227,7 +227,8 @@ def get_available_formats(url):
             'skip_download': True,
         }
         if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
-            ydl_opts['cookiefile'] = YTDL_COOKIES_PATH
+            cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
+            ydl_opts['cookiefile'] = cleaned_cookies if cleaned_cookies else YTDL_COOKIES_PATH
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -287,8 +288,8 @@ def clean_cookies_file(cookies_path):
             if stripped or (cleaned_lines and not cleaned_lines[-1].strip()):
                 cleaned_lines.append(line)
         
-        # Create cleaned cookies file
-        temp_cookies = cookies_path + '.cleaned'
+        # Create cleaned cookies file in /tmp (writable location)
+        temp_cookies = os.path.join('/tmp', 'cookies_cleaned.txt')
         with open(temp_cookies, 'w', encoding='utf-8') as f:
             f.writelines(cleaned_lines)
         
@@ -297,7 +298,8 @@ def clean_cookies_file(cookies_path):
         
     except Exception as e:
         logger.error("Error cleaning cookies file: %s", e)
-        return None
+        # If cleaning fails, try to use original
+        return cookies_path
 
 def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_available):
     """Get yt-dlp options with retry, anti-bot measures, and cookies"""
@@ -775,7 +777,7 @@ def get_video_info():
         return jsonify({'error': 'URL is required'}), 400
     try:
         ydl_opts = {
-            'quiet': False,  # Enable output to see errors
+            'quiet': False,
             'no_warnings': False,
             'skip_download': True,
             'http_headers': {
@@ -783,8 +785,9 @@ def get_video_info():
             },
         }
         if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
-            ydl_opts['cookiefile'] = YTDL_COOKIES_PATH
-            logger.info("Using cookies from: %s", YTDL_COOKIES_PATH)
+            cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
+            ydl_opts['cookiefile'] = cleaned_cookies if cleaned_cookies else YTDL_COOKIES_PATH
+            logger.info("Using cookies from: %s", ydl_opts['cookiefile'])
         
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -812,10 +815,9 @@ def get_video_info():
         error_msg = str(e)
         logger.exception("Error fetching video info: %s", error_msg)
         
-        # Check if it's a cookies format issue
         if "does not look like a Netscape format" in error_msg:
             return jsonify({
-                'error': 'Cookies file format error. Please re-export cookies using "Get cookies.txt LOCALLY" Chrome extension or use yt-dlp command line.',
+                'error': 'Cookies file format error. Try re-exporting cookies.',
                 'details': error_msg
             }), 500
         
