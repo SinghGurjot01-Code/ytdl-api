@@ -237,18 +237,42 @@ def get_available_formats(url):
         logger.error("Error getting available formats: %s", e)
         return []
 
-def is_format_available(formats, requested_format):
-    """Check if the requested format is available"""
+def is_format_available(url, requested_format):
+    """Check if the requested format is available for the given video"""
     try:
         ydl_opts = {
             'quiet': True,
             'no_warnings': True,
             'skip_download': True,
         }
+        
+        # Use cookies if available
+        if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
+            cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
+            ydl_opts['cookiefile'] = cleaned_cookies if cleaned_cookies else YTDL_COOKIES_PATH
+        
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.build_format_selector(requested_format)
-            return True
-    except Exception:
+            # Try to extract info with the requested format
+            ydl_opts_test = ydl_opts.copy()
+            ydl_opts_test['format'] = requested_format
+            
+            # Create a new ydl instance with the format to test
+            with yt_dlp.YoutubeDL(ydl_opts_test) as ydl_test:
+                info = ydl_test.extract_info(url, download=False)
+                
+                # If we get here without exception, format is available
+                if info and info.get('formats'):
+                    return True
+                    
+        return False
+    except yt_dlp.utils.DownloadError as e:
+        error_msg = str(e).lower()
+        if 'requested format is not available' in error_msg:
+            return False
+        # Other errors should be raised
+        raise
+    except Exception as e:
+        logger.error("Error checking format availability: %s", e)
         return False
 
 def clean_cookies_file(cookies_path):
