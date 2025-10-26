@@ -18,7 +18,6 @@ import io
 import base64
 import urllib.parse
 import re
-import signal
 
 YTDL_COOKIES_PATH = os.environ.get('YTDL_COOKIES_PATH')
 
@@ -54,12 +53,15 @@ def auto_clear_log():
 # Start background thread for log clearing
 threading.Thread(target=auto_clear_log, daemon=True).start()
 
-# In-memory tracking
+# In-memory tracking with thread safety
 download_status = {}
 captcha_store = {}
-
-# Verified CAPTCHA sessions (tracks which sessions have verified)
 verified_sessions = {}
+
+# Thread locks for thread-safe operations
+download_status_lock = threading.Lock()
+captcha_store_lock = threading.Lock()
+verified_sessions_lock = threading.Lock()
 
 class DownloadProgress:
     def __init__(self):
@@ -75,6 +77,8 @@ class DownloadProgress:
         self.total_bytes = 0
         self.speed = 0
         self.eta = 0
+        self.created_at = datetime.now()  # Track creation time for cleanup
+        self.last_accessed = datetime.now()  # Track last access
 
 def format_duration(seconds):
     try:
@@ -132,7 +136,22 @@ def check_ffmpeg():
         return False
 
 def safe_get_job(job_id):
-    return download_status.get(job_id)
+    """Thread-safe job retrieval with access tracking"""
+    with download_status_lock:
+        job = download_status.get(job_id)
+        if job:
+            job.last_accessed = datetime.now()
+        return job
+
+def safe_set_job(job_id, job):
+    """Thread-safe job setting"""
+    with download_status_lock:
+        download_status[job_id] = job
+
+def safe_remove_job(job_id):
+    """Thread-safe job removal"""
+    with download_status_lock:
+        return download_status.pop(job_id, None)
 
 def progress_hook_factory(job_id):
     """Return a progress hook function bound to job_id."""
@@ -211,7 +230,7 @@ def find_final_file_in_dir(temp_dir, title_hint=None):
         return None
     
     if title_hint:
-        normalized = title_hint.replace('/', '_').strip()
+        normalized = title_hint.replace('/', '_').replace('\\', '_').strip()
         matches = [f for f in files if os.path.basename(f).startswith(normalized)]
         if matches:
             matches.sort(key=lambda p: os.path.getsize(p) if os.path.exists(p) else 0, reverse=True)
@@ -225,11 +244,16 @@ def validate_format_string(format_str):
     if not format_str or not isinstance(format_str, str):
         return False
     
-    allowed_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]+=/<>:,._-')
+    # More restrictive allowed characters
+    allowed_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]+/._-')
     if not all(c in allowed_chars for c in format_str):
         return False
     
-    if len(format_str) > 200:
+    if len(format_str) > 100:  # Reduced from 200
+        return False
+    
+    # Additional security checks
+    if '..' in format_str or '//' in format_str:
         return False
     
     return True
@@ -279,7 +303,6 @@ def is_format_available(url, requested_format):
             
             # For video formats, check if the requested resolution range is available
             if 'height<=' in requested_format:
-                # FIXED: Proper regex pattern without extra parentheses
                 height_match = re.search(r'height<=(\d+)', requested_format)
                 if height_match:
                     max_height = int(height_match.group(1))
@@ -299,6 +322,9 @@ def clean_cookies_file(cookies_path):
     try:
         if not os.path.exists(cookies_path):
             return None
+        
+        # Create unique temp file to avoid race conditions
+        temp_cookies = os.path.join('/tmp', f'cookies_cleaned_{uuid.uuid4().hex}.txt')
         
         with open(cookies_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
@@ -331,8 +357,6 @@ def clean_cookies_file(cookies_path):
             if stripped or (cleaned_lines and not cleaned_lines[-1].strip()):
                 cleaned_lines.append(line)
         
-        # Create cleaned cookies file in /tmp (writable location)
-        temp_cookies = os.path.join('/tmp', 'cookies_cleaned.txt')
         with open(temp_cookies, 'w', encoding='utf-8') as f:
             f.writelines(cleaned_lines)
         
@@ -453,16 +477,16 @@ def handle_download_error(job, job_id, error, retry_count, max_retries):
         return False
     
     non_retryable_errors = [
-        "Requested format is not available",
-        "Private video", 
-        "Video unavailable",
-        "This video is not available",
-        "No video formats found",
-        "This video is private"
+        "requested format is not available",
+        "private video", 
+        "video unavailable",
+        "this video is not available",
+        "no video formats found",
+        "this video is private"
     ]
     
     for msg in non_retryable_errors:
-        if msg.lower() in error_msg.lower():
+        if msg in error_msg.lower():
             job.status = 'error'
             if "requested format is not available" in error_msg.lower():
                 job.error = 'The requested quality is not available for this video. Please try a lower quality.'
@@ -486,11 +510,10 @@ def handle_download_error(job, job_id, error, retry_count, max_retries):
     
     for msg in retryable_errors:
         if msg in error_msg.lower():
-            retry_count += 1
-            if retry_count < max_retries:
-                wait_time = min(2 ** retry_count, 30)
+            if retry_count < max_retries - 1:  # Fixed: don't double increment
+                wait_time = min(2 ** (retry_count + 1), 30)
                 logger.info("Job %s - %s error, waiting %d seconds before retry %d", 
-                           job_id, msg.upper(), wait_time, retry_count)
+                           job_id, msg.upper(), wait_time, retry_count + 2)
                 time.sleep(wait_time)
                 return True
             else:
@@ -510,7 +533,7 @@ def download_worker(url, format_str, file_ext, job_id):
         logger.error("Download worker called with missing job_id: %s", job_id)
         return
 
-    temp_dir = tempfile.mkdtemp(prefix='ytdl_')
+    temp_dir = tempfile.mkdtemp(prefix=f'ytdl_{uuid.uuid4().hex}_')
     job.temp_dir = temp_dir
     job.ffmpeg_available = check_ffmpeg()
     logger.info("Job %s - temp_dir: %s - ffmpeg_available: %s", job_id, temp_dir, job.ffmpeg_available)
@@ -581,7 +604,8 @@ def download_worker(url, format_str, file_ext, job_id):
                     
                     try:
                         size = os.path.getsize(final)
-                        if size < 100:
+                        # More reasonable minimum file size check
+                        if size < 1024:  # 1KB minimum
                             job.status = 'error'
                             job.error = 'Downloaded file is too small or corrupted'
                             logger.error("Job %s - file too small: %s (%d bytes)", job_id, final, size)
@@ -741,12 +765,13 @@ def generate_captcha():
             logger.error("Failed to generate CAPTCHA image")
             return jsonify({'error': 'Failed to generate CAPTCHA image'}), 500
         
-        # Store CAPTCHA data
-        captcha_store[captcha_id] = {
-            'code': captcha_code,
-            'expires': datetime.now() + timedelta(minutes=5),
-            'image_data': captcha_image
-        }
+        # Store CAPTCHA data with thread safety
+        with captcha_store_lock:
+            captcha_store[captcha_id] = {
+                'code': captcha_code,
+                'expires': datetime.now() + timedelta(minutes=5),
+                'image_data': captcha_image
+            }
         
         # Clean up expired CAPTCHAs
         cleanup_expired_captchas()
@@ -778,31 +803,34 @@ def verify_captcha():
         # Clean up expired CAPTCHAs first
         cleanup_expired_captchas()
         
-        # Check if CAPTCHA exists
-        captcha_data = captcha_store.get(captcha_id)
-        if not captcha_data:
-            logger.warning("CAPTCHA verification failed: ID %s not found", captcha_id)
-            return jsonify({'valid': False, 'error': 'CAPTCHA expired or invalid'})
-        
-        # Check if CAPTCHA is expired
-        if datetime.now() > captcha_data['expires']:
-            captcha_store.pop(captcha_id, None)
-            logger.warning("CAPTCHA verification failed: ID %s expired", captcha_id)
-            return jsonify({'valid': False, 'error': 'CAPTCHA expired'})
-        
-        # Verify the code
-        is_valid = user_input == captcha_data['code']
+        # Check if CAPTCHA exists with thread safety
+        with captcha_store_lock:
+            captcha_data = captcha_store.get(captcha_id)
+            if not captcha_data:
+                logger.warning("CAPTCHA verification failed: ID %s not found", captcha_id)
+                return jsonify({'valid': False, 'error': 'CAPTCHA expired or invalid'})
+            
+            # Check if CAPTCHA is expired
+            if datetime.now() > captcha_data['expires']:
+                captcha_store.pop(captcha_id, None)
+                logger.warning("CAPTCHA verification failed: ID %s expired", captcha_id)
+                return jsonify({'valid': False, 'error': 'CAPTCHA expired'})
+            
+            # Verify the code
+            is_valid = user_input == captcha_data['code']
+            
+            if is_valid:
+                # Remove used CAPTCHA
+                captcha_store.pop(captcha_id, None)
         
         if is_valid:
-            # Create session token
+            # Create session token with thread safety
             session_token = str(uuid.uuid4())
-            verified_sessions[session_token] = {
-                'verified_at': datetime.now(),
-                'expires': datetime.now() + timedelta(minutes=10)
-            }
-            
-            # Remove used CAPTCHA
-            captcha_store.pop(captcha_id, None)
+            with verified_sessions_lock:
+                verified_sessions[session_token] = {
+                    'verified_at': datetime.now(),
+                    'expires': datetime.now() + timedelta(minutes=10)
+                }
             
             logger.info("CAPTCHA verification successful for ID: %s, session: %s", captcha_id, session_token)
             return jsonify({'valid': True, 'session_token': session_token})
@@ -819,27 +847,57 @@ def cleanup_expired_captchas():
     try:
         now = datetime.now()
         
-        # Clean expired CAPTCHAs
-        expired_keys = [
-            key for key, data in captcha_store.items() 
-            if now > data['expires']
-        ]
-        for key in expired_keys:
-            captcha_store.pop(key, None)
+        # Clean expired CAPTCHAs with thread safety
+        with captcha_store_lock:
+            expired_keys = [
+                key for key, data in captcha_store.items() 
+                if now > data['expires']
+            ]
+            for key in expired_keys:
+                captcha_store.pop(key, None)
         
-        # Clean expired sessions
-        expired_sessions = [
-            key for key, data in verified_sessions.items()
-            if now > data['expires']
-        ]
-        for key in expired_sessions:
-            verified_sessions.pop(key, None)
-            
+        # Clean expired sessions with thread safety
+        with verified_sessions_lock:
+            expired_sessions = [
+                key for key, data in verified_sessions.items()
+                if now > data['expires']
+            ]
+            for key in expired_sessions:
+                verified_sessions.pop(key, None)
+                
         if expired_keys or expired_sessions:
             logger.info("Cleaned up %d expired CAPTCHAs and %d expired sessions", 
                        len(expired_keys), len(expired_sessions))
     except Exception as e:
         logger.error("Error cleaning up expired items: %s", e)
+
+def cleanup_old_jobs():
+    """Remove old jobs and their temp directories"""
+    try:
+        now = datetime.now()
+        expired_jobs = []
+        
+        with download_status_lock:
+            for job_id, job in download_status.items():
+                # Remove jobs older than 1 hour or completed jobs older than 30 minutes
+                if (now - job.created_at).total_seconds() > 3600 or \
+                   (job.completed and (now - job.last_accessed).total_seconds() > 1800):
+                    expired_jobs.append((job_id, job))
+        
+        for job_id, job in expired_jobs:
+            if job.temp_dir and os.path.exists(job.temp_dir):
+                try:
+                    shutil.rmtree(job.temp_dir)
+                    logger.info("Cleanup removed temp_dir %s for expired job %s", job.temp_dir, job_id)
+                except Exception as e:
+                    logger.error("Error removing temp dir %s: %s", job.temp_dir, e)
+            safe_remove_job(job_id)
+            
+        if expired_jobs:
+            logger.info("Cleaned up %d expired jobs", len(expired_jobs))
+            
+    except Exception as e:
+        logger.error("Error in cleanup_old_jobs: %s", e)
 
 @app.route('/api/ffmpeg-status')
 def get_ffmpeg_status():
@@ -848,26 +906,36 @@ def get_ffmpeg_status():
 class TimeoutException(Exception):
     pass
 
-def timeout_handler(signum, frame):
-    raise TimeoutException("Video info extraction timed out")
-
 def extract_video_info_with_timeout(url, ydl_opts, timeout_seconds=30):
-    """Extract video info with timeout to prevent hanging"""
-    # Set up timeout handler
-    signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(timeout_seconds)
+    """Extract video info with timeout using threading (replaces signal-based timeout)"""
+    import queue
     
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            signal.alarm(0)  # Cancel the alarm
-            return info
-    except TimeoutException:
-        logger.error("Video info extraction timed out after %d seconds", timeout_seconds)
-        raise
-    except Exception as e:
-        signal.alarm(0)  # Cancel the alarm on other exceptions
-        raise
+    result_queue = queue.Queue()
+    exception_queue = queue.Queue()
+    
+    def worker():
+        try:
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+                result_queue.put(info)
+        except Exception as e:
+            exception_queue.put(e)
+    
+    thread = threading.Thread(target=worker)
+    thread.daemon = True
+    thread.start()
+    thread.join(timeout_seconds)
+    
+    if thread.is_alive():
+        raise TimeoutException(f"Video info extraction timed out after {timeout_seconds} seconds")
+    
+    if not exception_queue.empty():
+        raise exception_queue.get()
+    
+    if not result_queue.empty():
+        return result_queue.get()
+    
+    raise Exception("Unknown error in video info extraction")
 
 @app.route('/api/video-info', methods=['POST'])
 def get_video_info():
@@ -875,6 +943,10 @@ def get_video_info():
     url = data.get('url')
     if not url:
         return jsonify({'error': 'URL is required'}), 400
+    
+    # Basic URL validation
+    if not url.startswith(('http://', 'https://')):
+        return jsonify({'error': 'Invalid URL format'}), 400
     
     try:
         ydl_opts = {
@@ -951,8 +1023,17 @@ def get_video_info():
                     'type': format_type
                 })
         
+        # Escape HTML characters in title to prevent XSS
+        title = info.get('title', 'Unknown')
+        if isinstance(title, str):
+            title = (title.replace('&', '&amp;')
+                    .replace('<', '&lt;')
+                    .replace('>', '&gt;')
+                    .replace('"', '&quot;')
+                    .replace("'", '&#039;'))
+        
         video_info = {
-            'title': info.get('title', 'Unknown'),
+            'title': title,
             'duration': format_duration(info.get('duration', 0)),
             'thumbnail': info.get('thumbnail', ''),
             'channel': info.get('uploader', 'Unknown'),
@@ -1016,16 +1097,24 @@ def download_video():
     if not url or not format_str:
         return jsonify({'error': 'URL and format are required'}), 400
     
-    # Verify CAPTCHA session
-    if not session_token or session_token not in verified_sessions:
-        logger.warning("Download attempt without valid session token")
-        return jsonify({'error': 'CAPTCHA verification required'}), 403
+    # Basic URL validation
+    if not url.startswith(('http://', 'https://')):
+        return jsonify({'error': 'Invalid URL format'}), 400
     
-    session_data = verified_sessions[session_token]
-    if datetime.now() > session_data['expires']:
+    # Verify CAPTCHA session with thread safety
+    with verified_sessions_lock:
+        if not session_token or session_token not in verified_sessions:
+            logger.warning("Download attempt without valid session token")
+            return jsonify({'error': 'CAPTCHA verification required'}), 403
+        
+        session_data = verified_sessions[session_token]
+        if datetime.now() > session_data['expires']:
+            verified_sessions.pop(session_token, None)
+            logger.warning("Download attempt with expired session token")
+            return jsonify({'error': 'CAPTCHA session expired'}), 403
+        
+        # Consume the session token immediately
         verified_sessions.pop(session_token, None)
-        logger.warning("Download attempt with expired session token")
-        return jsonify({'error': 'CAPTCHA session expired'}), 403
     
     if not validate_format_string(format_str):
         logger.warning("Invalid format string rejected: %s", format_str)
@@ -1043,17 +1132,16 @@ def download_video():
         logger.warning("Could not check format availability: %s", e)
 
     job_id = str(uuid.uuid4())
-    download_status[job_id] = DownloadProgress()
-    download_status[job_id].ffmpeg_available = check_ffmpeg()
+    job = DownloadProgress()
+    job.ffmpeg_available = check_ffmpeg()
+    safe_set_job(job_id, job)
 
-    # Consume the session token
-    verified_sessions.pop(session_token, None)
     logger.info("Session token %s consumed for job %s", session_token, job_id)
 
     t = threading.Thread(target=download_worker, args=(url, format_str, file_ext, job_id), daemon=True)
     t.start()
 
-    return jsonify({'job_id': job_id, 'ffmpeg_available': download_status[job_id].ffmpeg_available})
+    return jsonify({'job_id': job_id, 'ffmpeg_available': job.ffmpeg_available})
 
 @app.route('/api/download-status/<job_id>')
 def get_download_status(job_id):
@@ -1098,6 +1186,17 @@ def download_file(job_id):
     if not filename or not os.path.exists(filename):
         return jsonify({'error': 'File not found on server'}), 404
 
+    # Security check: ensure file is within temp directory
+    try:
+        filename = os.path.abspath(filename)
+        temp_dir = os.path.abspath(job.temp_dir)
+        if not filename.startswith(temp_dir):
+            logger.error("Security violation: file %s not in temp dir %s", filename, temp_dir)
+            return jsonify({'error': 'Invalid file path'}), 403
+    except Exception as e:
+        logger.error("Error validating file path: %s", e)
+        return jsonify({'error': 'File path validation failed'}), 500
+
     original_filename = os.path.basename(filename)
     ext = os.path.splitext(original_filename)[1].lower().lstrip('.')
     mime_types = {
@@ -1106,10 +1205,8 @@ def download_file(job_id):
     }
     mimetype = mime_types.get(ext, 'application/octet-stream')
 
-    abs_path = os.path.abspath(filename)
-
     def schedule_cleanup_job(job_id_inner):
-        time.sleep(300)
+        time.sleep(300)  # 5 minutes delay
         j = safe_get_job(job_id_inner)
         if j and j.temp_dir and os.path.exists(j.temp_dir):
             try:
@@ -1117,35 +1214,18 @@ def download_file(job_id):
                 logger.info("Scheduled cleanup removed %s for job %s", j.temp_dir, job_id_inner)
             except Exception as e:
                 logger.error("Error removing temp dir %s: %s", j.temp_dir, e)
-        download_status.pop(job_id_inner, None)
+        safe_remove_job(job_id_inner)
 
     threading.Thread(target=schedule_cleanup_job, args=(job_id,), daemon=True).start()
 
-    return send_file(abs_path, as_attachment=True, download_name=original_filename, mimetype=mimetype)
-
-def cleanup_old_files():
-    """Remove completed files and temp dirs older than 1 hour."""
-    now = time.time()
-    one_hour_ago = now - 3600
-    
-    for jid, job in list(download_status.items()):
-        try:
-            if job.temp_dir and os.path.exists(job.temp_dir):
-                mtime = os.path.getmtime(job.temp_dir)
-                if mtime < one_hour_ago:
-                    try:
-                        shutil.rmtree(job.temp_dir)
-                        logger.info("Cleanup removed temp_dir %s (job %s)", job.temp_dir, jid)
-                    except Exception as e:
-                        logger.error("Error removing %s: %s", job.temp_dir, e)
-                    download_status.pop(jid, None)
-        except Exception as e:
-            logger.exception("Error in cleanup_old_files for job %s: %s", jid, e)
+    return send_file(filename, as_attachment=True, download_name=original_filename, mimetype=mimetype)
 
 def schedule_cleanup():
-    cleanup_old_files()
+    """Run cleanup tasks periodically"""
+    cleanup_old_jobs()
     cleanup_expired_captchas()
-    threading.Timer(1800, schedule_cleanup).start()
+    # Reschedule itself
+    threading.Timer(1800, schedule_cleanup).start()  # Every 30 minutes
 
 @app.route('/')
 def health_check():
@@ -1169,7 +1249,9 @@ def health_check():
         'cookies_configured': bool(YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH)),
         'cookies_path': YTDL_COOKIES_PATH or 'Not set',
         'cookies_preview': cookie_preview,
-        'ffmpeg_available': check_ffmpeg()
+        'ffmpeg_available': check_ffmpeg(),
+        'active_jobs': len(download_status),
+        'active_sessions': len(verified_sessions)
     })
 
 @app.route('/api/debug-cookies')
@@ -1233,6 +1315,7 @@ if __name__ == '__main__':
         print("   Bot detection errors are likely - please configure cookies!")
         logger.warning("❌ YTDL_COOKIES_PATH environment variable not set")
 
+    # Start cleanup scheduler
     schedule_cleanup()
 
     port = int(os.environ.get('PORT', 5000))
