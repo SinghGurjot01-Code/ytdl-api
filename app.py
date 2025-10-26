@@ -381,7 +381,11 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
             else:
                 base_opts['format'] = 'bestaudio/best'
         else:
-            base_opts['format'] = format_str
+            # Add fallback formats for better compatibility
+            # Try requested format first, then fallback to best available
+            fallback_format = f"{format_str}/best[height<=1080]/best"
+            base_opts['format'] = fallback_format
+            logger.info("Using format with fallback: %s", fallback_format)
     except Exception as e:
         logger.exception("Job %s - error building ydl_opts: %s", job_id, e)
 
