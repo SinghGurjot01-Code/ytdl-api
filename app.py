@@ -109,6 +109,20 @@ def bytes_to_mb(bytes_value):
     except Exception:
         return 0
 
+def format_file_size(bytes_value):
+    """Convert bytes to human readable format"""
+    try:
+        if bytes_value >= 1024 * 1024 * 1024:
+            return f"{round(bytes_value / (1024 * 1024 * 1024), 1)}GB"
+        elif bytes_value >= 1024 * 1024:
+            return f"{round(bytes_value / (1024 * 1024), 1)}MB"
+        elif bytes_value >= 1024:
+            return f"{round(bytes_value / 1024, 1)}KB"
+        else:
+            return f"{bytes_value}B"
+    except Exception:
+        return "Unknown"
+
 def check_ffmpeg():
     """Return True if ffmpeg is available."""
     try:
@@ -409,11 +423,12 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
             else:
                 base_opts['format'] = 'bestaudio/best'
         else:
-            # Use more flexible format selection with better fallbacks
-            if 'bestvideo' in format_str and 'bestaudio' in format_str:
-                # For video+audio combinations, use a more flexible approach
-                base_opts['format'] = f"{format_str}/best[height<=1080]/best"
+            # Use format_id directly for better compatibility
+            if format_str.startswith('best[') or format_str.startswith('worst['):
+                # This is a format selector, use as-is
+                base_opts['format'] = format_str
             else:
+                # This is likely a format_id, use it directly
                 base_opts['format'] = format_str
             
             logger.info("Job %s - using format: %s", job_id, base_opts['format'])
@@ -873,13 +888,43 @@ def get_video_info():
         formats = []
         for f in info.get('formats', []) if isinstance(info, dict) else []:
             if f.get('format_id'):
+                # Calculate file size
+                filesize = f.get('filesize') or f.get('filesize_approx')
+                if filesize:
+                    filesize_display = format_file_size(filesize)
+                else:
+                    filesize_display = None
+                
+                # Determine format type
+                is_audio = f.get('acodec') != 'none' and f.get('vcodec') == 'none'
+                format_type = 'audio' if is_audio else 'video'
+                
+                # Get resolution/quality info
+                resolution = None
+                if f.get('height'):
+                    resolution = f"{f.get('height')}p"
+                elif f.get('format_note'):
+                    resolution = f.get('format_note')
+                
+                # Get audio bitrate if available
+                abr = f.get('abr')
+                if abr:
+                    quality = f"{abr}kbps"
+                else:
+                    quality = resolution or 'Best Quality'
+                
                 formats.append({
                     'format_id': f.get('format_id'),
                     'ext': f.get('ext', ''),
-                    'resolution': f.get('format_note') or f.get('resolution') or f.get('height'),
-                    'filesize': f.get('filesize') or f.get('filesize_approx'),
+                    'resolution': resolution,
+                    'quality': quality,
+                    'filesize': filesize_display,
+                    'filesize_bytes': filesize,
                     'vcodec': f.get('vcodec', 'none'),
                     'acodec': f.get('acodec', 'none'),
+                    'format_note': f.get('format_note', ''),
+                    'fps': f.get('fps'),
+                    'type': format_type
                 })
         
         video_info = {
