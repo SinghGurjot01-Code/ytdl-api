@@ -279,7 +279,8 @@ def is_format_available(url, requested_format):
             
             # For video formats, check if the requested resolution range is available
             if 'height<=' in requested_format:
-                height_match = re.search(r('height<=(\d+)'), requested_format)
+                # FIXED: Proper regex pattern without extra parentheses
+                height_match = re.search(r'height<=(\d+)', requested_format)
                 if height_match:
                     max_height = int(height_match.group(1))
                     video_formats = [f for f in formats if f.get('height') and f.get('height') <= max_height and f.get('vcodec') != 'none']
