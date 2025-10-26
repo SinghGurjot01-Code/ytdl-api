@@ -797,35 +797,42 @@ def verify_captcha():
         captcha_id = data.get('captcha_id')
         user_input = data.get('captcha_input')
         
+        logger.info("CAPTCHA verification request - ID: %s, Input: %s", captcha_id, user_input)
+        
         if not captcha_id or not user_input:
-            return jsonify({'error': 'CAPTCHA ID and input required'}), 400
+            return jsonify({'valid': False, 'error': 'CAPTCHA ID and input required'}), 400
         
         # Clean up expired CAPTCHAs first
         cleanup_expired_captchas()
         
-        # Check if CAPTCHA exists with thread safety
+        # Check if CAPTCHA exists and verify with thread safety
         with captcha_store_lock:
             captcha_data = captcha_store.get(captcha_id)
+            
             if not captcha_data:
-                logger.warning("CAPTCHA verification failed: ID %s not found", captcha_id)
-                return jsonify({'valid': False, 'error': 'CAPTCHA expired or invalid'})
+                logger.warning("CAPTCHA verification failed: ID %s not found in store", captcha_id)
+                return jsonify({'valid': False, 'error': 'CAPTCHA not found or already used'}), 404
             
             # Check if CAPTCHA is expired
             if datetime.now() > captcha_data['expires']:
                 captcha_store.pop(captcha_id, None)
                 logger.warning("CAPTCHA verification failed: ID %s expired", captcha_id)
-                return jsonify({'valid': False, 'error': 'CAPTCHA expired'})
+                return jsonify({'valid': False, 'error': 'CAPTCHA expired'}), 400
             
-            # Verify the code FIRST
-            is_valid = user_input.strip() == captcha_data['code']
+            # Store the code before removing from store
+            stored_code = captcha_data['code']
             
-            # Remove CAPTCHA after checking (whether valid or not)
+            # Remove CAPTCHA immediately to prevent reuse (one-time use)
             captcha_store.pop(captcha_id, None)
-            
-            if not is_valid:
-                logger.warning("CAPTCHA verification failed: incorrect code '%s' for ID %s (expected '%s')", 
-                              user_input, captcha_id, captcha_data['code'])
-                return jsonify({'valid': False, 'error': 'Incorrect CAPTCHA code'})
+            logger.info("CAPTCHA %s removed from store (one-time use)", captcha_id)
+        
+        # Verify the code AFTER removing from store (outside lock)
+        is_valid = user_input.strip() == stored_code
+        
+        if not is_valid:
+            logger.warning("CAPTCHA verification failed: incorrect code '%s' for ID %s (expected '%s')", 
+                          user_input, captcha_id, stored_code)
+            return jsonify({'valid': False, 'error': 'Incorrect CAPTCHA code'}), 400
         
         # Create session token only if CAPTCHA is valid
         session_token = str(uuid.uuid4())
@@ -835,12 +842,12 @@ def verify_captcha():
                 'expires': datetime.now() + timedelta(minutes=10)
             }
         
-        logger.info("CAPTCHA verification successful for ID: %s, session: %s", captcha_id, session_token)
-        return jsonify({'valid': True, 'session_token': session_token})
+        logger.info("✅ CAPTCHA verified successfully for ID: %s, session token: %s", captcha_id, session_token)
+        return jsonify({'valid': True, 'session_token': session_token}), 200
             
     except Exception as e:
-        logger.error("Error verifying CAPTCHA: %s", e)
-        return jsonify({'error': 'Failed to verify CAPTCHA'}), 500
+        logger.exception("Error verifying CAPTCHA: %s", e)
+        return jsonify({'valid': False, 'error': 'Failed to verify CAPTCHA. Please try again.'}), 500
 
 def cleanup_expired_captchas():
     """Remove expired CAPTCHAs and sessions"""
@@ -1325,4 +1332,5 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
