@@ -847,9 +847,54 @@ def get_video_info():
                 'formats': formats
             }
             return jsonify(video_info)
-    except Exception as e:
+    except yt_dlp.utils.DownloadError as e:
         error_msg = str(e)
         logger.exception("Error fetching video info: %s", error_msg)
+        
+        # Handle signature extraction and format availability issues
+        if "signature extraction failed" in error_msg.lower() or "requested format is not available" in error_msg.lower():
+            logger.warning("Signature extraction failed or format not available, trying fallback method")
+            # Try with a simpler format that should work
+            try:
+                ydl_opts_fallback = {
+                    'quiet': False,
+                    'no_warnings': False,
+                    'skip_download': True,
+                    'format': 'best[height<=720]',  # Simple format that usually works
+                    'http_headers': {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    },
+                }
+                if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
+                    cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
+                    ydl_opts_fallback['cookiefile'] = cleaned_cookies if cleaned_cookies else YTDL_COOKIES_PATH
+                
+                with yt_dlp.YoutubeDL(ydl_opts_fallback) as ydl:
+                    info = ydl.extract_info(url, download=False)
+                    formats = []
+                    for f in info.get('formats', []) if isinstance(info, dict) else []:
+                        if f.get('format_id'):
+                            formats.append({
+                                'format_id': f.get('format_id'),
+                                'ext': f.get('ext', ''),
+                                'resolution': f.get('format_note') or f.get('resolution') or f.get('height'),
+                                'filesize': f.get('filesize') or f.get('filesize_approx'),
+                                'vcodec': f.get('vcodec', 'none'),
+                                'acodec': f.get('acodec', 'none'),
+                            })
+                    video_info = {
+                        'title': info.get('title', 'Unknown'),
+                        'duration': format_duration(info.get('duration', 0)),
+                        'thumbnail': info.get('thumbnail', ''),
+                        'channel': info.get('uploader', 'Unknown'),
+                        'view_count': info.get('view_count', 0),
+                        'formats': formats,
+                        'warning': 'Some formats may be unavailable due to YouTube restrictions'
+                    }
+                    return jsonify(video_info)
+            except Exception as fallback_error:
+                logger.error("Fallback method also failed: %s", fallback_error)
+                return jsonify({'error': 'YouTube is restricting access to this video. Please try again later or use a different video.'}), 500
         
         if "does not look like a Netscape format" in error_msg:
             return jsonify({
@@ -858,6 +903,10 @@ def get_video_info():
             }), 500
         
         return jsonify({'error': str(e)}), 500
+    except Exception as e:
+        error_msg = str(e)
+        logger.exception("Unexpected error fetching video info: %s", error_msg)
+        return jsonify({'error': 'Failed to fetch video information. Please try again.'}), 500
 
 @app.route('/api/download', methods=['POST'])
 def download_video():
