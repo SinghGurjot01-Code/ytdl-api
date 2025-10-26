@@ -250,14 +250,63 @@ def is_format_available(formats, requested_format):
     except Exception:
         return False
 
+def clean_cookies_file(cookies_path):
+    """Clean and fix cookies file to ensure Netscape format compatibility"""
+    try:
+        if not os.path.exists(cookies_path):
+            return None
+        
+        with open(cookies_path, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        
+        # Filter and clean lines
+        cleaned_lines = []
+        seen_header = False
+        
+        for line in lines:
+            stripped = line.strip()
+            
+            # Keep only the first Netscape header line
+            if 'Netscape HTTP Cookie File' in line and not seen_header:
+                cleaned_lines.append('# Netscape HTTP Cookie File\n')
+                seen_header = True
+                continue
+            
+            # Skip other comment lines except the main header
+            if stripped.startswith('#'):
+                if 'Netscape HTTP Cookie File' in line:
+                    continue  # Already added
+                # Skip other comments like the curl.haxx.se line
+                continue
+            
+            # Skip empty lines at the start
+            if not stripped and not cleaned_lines:
+                continue
+            
+            # Keep cookie lines and one empty line after header
+            if stripped or (cleaned_lines and not cleaned_lines[-1].strip()):
+                cleaned_lines.append(line)
+        
+        # Create cleaned cookies file
+        temp_cookies = cookies_path + '.cleaned'
+        with open(temp_cookies, 'w', encoding='utf-8') as f:
+            f.writelines(cleaned_lines)
+        
+        logger.info("Created cleaned cookies file: %s", temp_cookies)
+        return temp_cookies
+        
+    except Exception as e:
+        logger.error("Error cleaning cookies file: %s", e)
+        return None
+
 def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_available):
     """Get yt-dlp options with retry, anti-bot measures, and cookies"""
     base_opts = {
         'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
         'progress_hooks': [progress_hook_factory(job_id)],
         'restrictfilenames': False,
-        'quiet': False,  # Changed to see detailed errors
-        'no_warnings': False,  # Changed to see warnings
+        'quiet': False,
+        'no_warnings': False,
         'nopart': False,
         'noplaylist': True,
         'extractor_retries': 5,
@@ -274,15 +323,21 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         },
     }
 
-    # CRITICAL: Use cookies file if available - try multiple approaches
+    # CRITICAL: Use cookies file if available
     cookies_loaded = False
     
     if YTDL_COOKIES_PATH:
         if os.path.exists(YTDL_COOKIES_PATH):
             try:
-                # Method 1: Try loading cookies directly
-                base_opts['cookiefile'] = YTDL_COOKIES_PATH
-                logger.info("✅ Set cookies file path: %s for job %s", YTDL_COOKIES_PATH, job_id)
+                # Clean the cookies file first
+                cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
+                if cleaned_cookies:
+                    base_opts['cookiefile'] = cleaned_cookies
+                    logger.info("✅ Using cleaned cookies file: %s for job %s", cleaned_cookies, job_id)
+                else:
+                    # Fallback to original if cleaning fails
+                    base_opts['cookiefile'] = YTDL_COOKIES_PATH
+                    logger.info("✅ Using original cookies file: %s for job %s", YTDL_COOKIES_PATH, job_id)
                 cookies_loaded = True
             except Exception as e:
                 logger.error("Failed to set cookiefile: %s", e)
@@ -291,9 +346,7 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
     
     if not cookies_loaded:
         logger.warning("⚠️ No cookies loaded - trying browser fallback")
-        # Try to use browser cookies as absolute last resort
         try:
-            # This won't work on most servers but worth a try
             base_opts['cookiesfrombrowser'] = ('chrome',)
         except Exception:
             pass
