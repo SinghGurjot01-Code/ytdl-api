@@ -816,13 +816,17 @@ def verify_captcha():
                 logger.warning("CAPTCHA verification failed: ID %s expired", captcha_id)
                 return jsonify({'valid': False, 'error': 'CAPTCHA expired'})
             
-            # Verify the code
+            # Verify the code FIRST, then remove if valid
             is_valid = user_input == captcha_data['code']
             
             if is_valid:
-                # Remove used CAPTCHA
+                # Remove used CAPTCHA only after successful verification
                 captcha_store.pop(captcha_id, None)
+            else:
+                logger.warning("CAPTCHA verification failed: incorrect code for ID %s", captcha_id)
+                return jsonify({'valid': False, 'error': 'Incorrect CAPTCHA code'})
         
+        # Only create session if CAPTCHA is valid
         if is_valid:
             # Create session token with thread safety
             session_token = str(uuid.uuid4())
@@ -834,9 +838,6 @@ def verify_captcha():
             
             logger.info("CAPTCHA verification successful for ID: %s, session: %s", captcha_id, session_token)
             return jsonify({'valid': True, 'session_token': session_token})
-        else:
-            logger.warning("CAPTCHA verification failed: incorrect code for ID %s", captcha_id)
-            return jsonify({'valid': False, 'error': 'Incorrect CAPTCHA code'})
             
     except Exception as e:
         logger.error("Error verifying CAPTCHA: %s", e)
