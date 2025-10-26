@@ -258,6 +258,25 @@ def validate_format_string(format_str):
     
     return True
 
+def extract_video_id(url):
+    """Extract video ID from YouTube URL"""
+    try:
+        # Handle various YouTube URL formats
+        patterns = [
+            r'(?:youtube\.com/watch\?v=|youtu\.be/)([^&?\n]+)',
+            r'youtube\.com/embed/([^&?\n]+)',
+            r'youtube\.com/v/([^&?\n]+)'
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, url)
+            if match:
+                return match.group(1)
+        
+        return None
+    except Exception:
+        return None
+
 def get_available_formats(url):
     """Get available formats for a YouTube URL"""
     try:
@@ -839,7 +858,8 @@ def verify_captcha():
         with verified_sessions_lock:
             verified_sessions[session_token] = {
                 'verified_at': datetime.now(),
-                'expires': datetime.now() + timedelta(minutes=10)
+                'expires': datetime.now() + timedelta(minutes=10),
+                'verified_videos': set()  # Track which videos have been verified
             }
         
         logger.info("✅ CAPTCHA verified successfully for ID: %s, session token: %s", captcha_id, session_token)
@@ -848,6 +868,42 @@ def verify_captcha():
     except Exception as e:
         logger.exception("Error verifying CAPTCHA: %s", e)
         return jsonify({'valid': False, 'error': 'Failed to verify CAPTCHA. Please try again.'}), 500
+
+@app.route('/api/verify-video', methods=['POST'])
+def verify_video():
+    """Verify a video for download in the current session"""
+    try:
+        data = request.get_json() or {}
+        session_token = data.get('session_token')
+        video_url = data.get('url')
+        
+        if not session_token or not video_url:
+            return jsonify({'error': 'Session token and URL are required'}), 400
+        
+        # Extract video ID
+        video_id = extract_video_id(video_url)
+        if not video_id:
+            return jsonify({'error': 'Invalid YouTube URL'}), 400
+        
+        # Verify session and add video to verified videos
+        with verified_sessions_lock:
+            if session_token not in verified_sessions:
+                return jsonify({'error': 'Invalid session token'}), 403
+            
+            session_data = verified_sessions[session_token]
+            if datetime.now() > session_data['expires']:
+                verified_sessions.pop(session_token, None)
+                return jsonify({'error': 'Session expired'}), 403
+            
+            # Add this video to the verified videos set
+            session_data['verified_videos'].add(video_id)
+            logger.info("Video %s verified for session %s", video_id, session_token)
+        
+        return jsonify({'success': True, 'message': 'Video verified for download'}), 200
+        
+    except Exception as e:
+        logger.error("Error verifying video: %s", e)
+        return jsonify({'error': 'Failed to verify video'}), 500
 
 def cleanup_expired_captchas():
     """Remove expired CAPTCHAs and sessions"""
@@ -1340,6 +1396,3 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
-
-
-
