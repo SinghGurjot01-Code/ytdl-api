@@ -1094,7 +1094,7 @@ def get_video_info():
 
 @app.route('/api/download', methods=['POST'])
 def download_video():
-    """Download endpoint with CAPTCHA verification"""
+    """Download endpoint with CAPTCHA verification - only once per link"""
     data = request.get_json() or {}
     url = data.get('url')
     format_str = data.get('format')
@@ -1108,7 +1108,12 @@ def download_video():
     if not url.startswith(('http://', 'https://')):
         return jsonify({'error': 'Invalid URL format'}), 400
     
-    # Verify CAPTCHA session with thread safety
+    # Extract video ID for session tracking
+    video_id = extract_video_id(url)
+    if not video_id:
+        return jsonify({'error': 'Invalid YouTube URL'}), 400
+    
+    # Verify CAPTCHA session with thread safety - check if this video has been verified
     with verified_sessions_lock:
         if not session_token or session_token not in verified_sessions:
             logger.warning("Download attempt without valid session token")
@@ -1120,8 +1125,11 @@ def download_video():
             logger.warning("Download attempt with expired session token")
             return jsonify({'error': 'CAPTCHA session expired'}), 403
         
-        # Consume the session token immediately
-        verified_sessions.pop(session_token, None)
+        # Check if this video is already verified in this session
+        verified_videos = session_data.get('verified_videos', set())
+        if video_id not in verified_videos:
+            logger.warning("Video %s not verified in session %s", video_id, session_token)
+            return jsonify({'error': 'CAPTCHA verification required for this video'}), 403
     
     if not validate_format_string(format_str):
         logger.warning("Invalid format string rejected: %s", format_str)
@@ -1143,7 +1151,7 @@ def download_video():
     job.ffmpeg_available = check_ffmpeg()
     safe_set_job(job_id, job)
 
-    logger.info("Session token %s consumed for job %s", session_token, job_id)
+    logger.info("Processing download for video %s with job %s", video_id, job_id)
 
     t = threading.Thread(target=download_worker, args=(url, format_str, file_ext, job_id), daemon=True)
     t.start()
@@ -1332,5 +1340,6 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
 
