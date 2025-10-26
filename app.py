@@ -816,28 +816,27 @@ def verify_captcha():
                 logger.warning("CAPTCHA verification failed: ID %s expired", captcha_id)
                 return jsonify({'valid': False, 'error': 'CAPTCHA expired'})
             
-            # Verify the code FIRST, then remove if valid
-            is_valid = user_input == captcha_data['code']
+            # Verify the code FIRST
+            is_valid = user_input.strip() == captcha_data['code']
             
-            if is_valid:
-                # Remove used CAPTCHA only after successful verification
-                captcha_store.pop(captcha_id, None)
-            else:
-                logger.warning("CAPTCHA verification failed: incorrect code for ID %s", captcha_id)
+            # Remove CAPTCHA after checking (whether valid or not)
+            captcha_store.pop(captcha_id, None)
+            
+            if not is_valid:
+                logger.warning("CAPTCHA verification failed: incorrect code '%s' for ID %s (expected '%s')", 
+                              user_input, captcha_id, captcha_data['code'])
                 return jsonify({'valid': False, 'error': 'Incorrect CAPTCHA code'})
         
-        # Only create session if CAPTCHA is valid
-        if is_valid:
-            # Create session token with thread safety
-            session_token = str(uuid.uuid4())
-            with verified_sessions_lock:
-                verified_sessions[session_token] = {
-                    'verified_at': datetime.now(),
-                    'expires': datetime.now() + timedelta(minutes=10)
-                }
-            
-            logger.info("CAPTCHA verification successful for ID: %s, session: %s", captcha_id, session_token)
-            return jsonify({'valid': True, 'session_token': session_token})
+        # Create session token only if CAPTCHA is valid
+        session_token = str(uuid.uuid4())
+        with verified_sessions_lock:
+            verified_sessions[session_token] = {
+                'verified_at': datetime.now(),
+                'expires': datetime.now() + timedelta(minutes=10)
+            }
+        
+        logger.info("CAPTCHA verification successful for ID: %s, session: %s", captcha_id, session_token)
+        return jsonify({'valid': True, 'session_token': session_token})
             
     except Exception as e:
         logger.error("Error verifying CAPTCHA: %s", e)
@@ -1326,3 +1325,4 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
