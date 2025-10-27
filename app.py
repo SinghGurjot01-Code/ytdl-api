@@ -369,7 +369,9 @@ def clean_cookies_file(cookies_path):
         return cookies_path
 
 def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_available):
-    """Get yt-dlp options with retry, anti-bot measures, and cookies"""
+    """Get yt-dlp options optimized for Render.com to avoid SABR and signature issues"""
+    
+    # Base options optimized for stability
     base_opts = {
         'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
         'progress_hooks': [progress_hook_factory(job_id)],
@@ -378,129 +380,114 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         'no_warnings': False,
         'nopart': False,
         'noplaylist': True,
-        'extractor_retries': 5,
-        'retries': 15,
-        'fragment_retries': 15,
+        'extractor_retries': 3,
+        'retries': 10,
+        'fragment_retries': 10,
         'skip_unavailable_fragments': True,
         'continuedl': True,
         'age_limit': None,
         'playlist_items': '1',
         'allow_unplayable_formats': False,
-        'ignore_no_formats_error': False,
+        'ignore_no_formats_error': True,  # Changed to True to ignore format errors
         'format_sort': ['res', 'ext:mp4:m4a'],
         'merge_output_format': 'mp4',
+        
+        # CRITICAL: Force Android client only to avoid SABR streaming
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'web'],
-                'skip': ['hls', 'dash'],
+                'player_client': ['android'],  # Only android, no web/safari
+                'player_skip': ['js', 'configs', 'webpage'],
+            }
+        },
+        
+        # Enhanced format selection with safe fallbacks
+        'format': 'bv*[vcodec^=avc1]+ba[acodec^=mp4a] / bv*+ba/best[height<=1080] / best',
+        
+        # HTTP settings optimized for Render
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
+            'Accept': '*/*',
+            'Accept-Language': 'en-US,en;q=0.9',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+        },
+        
+        # Anti-bot measures
+        'sleep_interval': 2,
+        'max_sleep_interval': 8,
+        'throttled_rate': '512K',
+        
+        # Error handling
+        'ignoreerrors': True,  # Continue on minor errors
+        'no_check_certificate': True,
+        'prefer_insecure': False,
+    }
+
+    # Cookies handling - simplified for Render
+    cookies_loaded = False
+    if YTDL_COOKIES_PATH and os.path.exists(YTDL_COOKIES_PATH):
+        try:
+            cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
+            if cleaned_cookies:
+                base_opts['cookiefile'] = cleaned_cookies
+                logger.info("✅ Using cleaned cookies file: %s for job %s", cleaned_cookies, job_id)
+                cookies_loaded = True
+        except Exception as e:
+            logger.error("Failed to set cookiefile: %s", e)
+    
+    # REMOVED cookiesfrombrowser completely - Render doesn't have Chrome
+    
+    # Format-specific configuration
+    try:
+        if file_ext == 'mp3':
+            if ffmpeg_available:
+                base_opts.update({
+                    'format': 'bestaudio/best',
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': file_ext,
+                        'preferredquality': '192',
+                    }],
+                })
+            else:
+                # Fallback for audio without ffmpeg
+                base_opts['format'] = 'bestaudio[ext=m4a]/bestaudio/best'
+        else:
+            # Video format with robust fallbacks
+            if format_str and validate_format_string(format_str):
+                # Enhanced format selection with multiple fallbacks
+                format_with_fallback = f"{format_str}/bv*[height<=1080]+ba/b[height<=720]/best[height<=1080]/best"
+                base_opts['format'] = format_with_fallback
+                logger.info("Job %s - using enhanced format with fallback: %s", job_id, format_with_fallback)
+            else:
+                # Default safe format selection
+                base_opts['format'] = 'bv*[vcodec^=avc1][height<=1080]+ba[acodec^=mp4a] / bv*[height<=1080]+ba / best[height<=1080] / best'
+                logger.info("Job %s - using default android-optimized format", job_id)
+            
+    except Exception as e:
+        logger.exception("Job %s - error building format options: %s", job_id, e)
+        # Ultimate fallback - let yt-dlp choose the best available
+        base_opts['format'] = 'best'
+        base_opts['ignoreerrors'] = True
+
+    return base_opts
+
+def get_fallback_ydl_opts(temp_dir, job_id):
+    """Ultimate fallback options when everything else fails"""
+    return {
+        'outtmpl': os.path.join(temp_dir, '%(title)s.%(ext)s'),
+        'format': 'best',
+        'ignoreerrors': True,
+        'no_warnings': False,
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android'],
             }
         },
         'http_headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'en-us,en;q=0.5',
-            'Accept-Encoding': 'gzip,deflate',
-            'Connection': 'keep-alive',
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
         },
     }
-
-    cookies_loaded = False
-    if YTDL_COOKIES_PATH:
-        if os.path.exists(YTDL_COOKIES_PATH):
-            try:
-                cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
-                if cleaned_cookies:
-                    base_opts['cookiefile'] = cleaned_cookies
-                    logger.info("✅ Using cleaned cookies file: %s for job %s", cleaned_cookies, job_id)
-                else:
-                    base_opts['cookiefile'] = YTDL_COOKIES_PATH
-                    logger.info("✅ Using original cookies file: %s for job %s", YTDL_COOKIES_PATH, job_id)
-                cookies_loaded = True
-            except Exception as e:
-                logger.error("Failed to set cookiefile: %s", e)
-        else:
-            logger.error("❌ Cookies file not found at: %s", YTDL_COOKIES_PATH)
-    
-    if not cookies_loaded:
-        logger.warning("⚠️ No cookies loaded - trying browser fallback")
-        try:
-            base_opts['cookiesfrombrowser'] = ('chrome',)
-        except Exception:
-            pass
-
-    anti_bot_opts = {
-        'extract_flat': False,
-        'ignoreerrors': False,
-        'sleep_interval': 1,
-        'max_sleep_interval': 5,
-        'sleep_interval_requests': 1,
-        'retry_sleep_functions': {
-            'http': lambda n: min(2 ** n, 10),
-            'fragment': lambda n: min(2 ** n, 10),
-            'extractor': lambda n: min(2 ** n, 10),
-        }
-    }
-    base_opts.update(anti_bot_opts)
-
-    try:
-        if file_ext == 'mp3':
-            if ffmpeg_available:
-                base_opts.update({
-                    'format': 'bestaudio/best',
-                    'postprocessors': [{
-                        'key': 'FFmpegExtractAudio',
-                        'preferredcodec': file_ext,
-                        'preferredquality': '192',
-                    }],
-                })
-            else:
-                base_opts['format'] = 'bestaudio/best'
-        else:
-            if format_str:
-                format_with_fallback = f"{format_str}/best[height<=1080]/best"
-                base_opts['format'] = format_with_fallback
-                logger.info("Job %s - using format with fallback: %s", job_id, format_with_fallback)
-            else:
-                base_opts['format'] = 'best[height<=1080]/best'
-                logger.info("Job %s - using default safe format", job_id)
-    except Exception as e:
-        logger.exception("Job %s - error building ydl_opts: %s", job_id, e)
-        base_opts['format'] = 'best'
-
-    return base_opts
-
-    # Format selection with proper fallbacks
-    try:
-        if file_ext == 'mp3':
-            if ffmpeg_available:
-                base_opts.update({
-                    'format': 'bestaudio/best',
-                    'postprocessors': [{
-                        'key': 'FFmpegExtractAudio',
-                        'preferredcodec': file_ext,
-                        'preferredquality': '192',
-                    }],
-                })
-            else:
-                base_opts['format'] = 'bestaudio/best'
-        else:
-            # More robust format selection with fallbacks
-            if format_str:
-                # Build a format string with fallbacks
-                format_with_fallback = f"{format_str}/best[height<=1080]/best"
-                base_opts['format'] = format_with_fallback
-                logger.info("Job %s - using format with fallback: %s", job_id, format_with_fallback)
-            else:
-                # Default safe format
-                base_opts['format'] = 'best[height<=1080]/best'
-                logger.info("Job %s - using default safe format", job_id)
-            
-    except Exception as e:
-        logger.exception("Job %s - error building ydl_opts: %s", job_id, e)
-        # Fallback to the safest default
-        base_opts['format'] = 'best'
-
-    return base_opts
 
 def handle_download_error(job, job_id, error, retry_count, max_retries):
     """Handle download errors with appropriate retry logic"""
@@ -927,7 +914,7 @@ def verify_captcha():
             verified_sessions[session_token] = {
                 'verified_at': datetime.now(),
                 'expires': datetime.now() + timedelta(minutes=10),
-                'verified_videos': set()  # ADD THIS LINE
+                'verified_videos': set()
             }
         
         logger.info("✅ CAPTCHA verified successfully for ID: %s, session token: %s", captcha_id, session_token)
@@ -1064,7 +1051,7 @@ def get_video_info():
             'ignoreerrors': False,
             'no_color': True,
             'http_headers': {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 13; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
                 'Accept-Language': 'en-us,en;q=0.5',
                 'Accept-Encoding': 'gzip,deflate',
@@ -1190,10 +1177,6 @@ def get_video_info():
             'error': 'Failed to fetch video information.',
             'suggestion': 'Please try again with a different video URL'
         }), 500
-
-# SIMPLIFIED APPROACH - Update the download_video() function in app.py
-# This will automatically verify videos on download attempt
-# REPLACE the download_video() function (around line 1092) with this:
 
 @app.route('/api/download', methods=['POST'])
 def download_video():
@@ -1447,9 +1430,3 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
-
-
-
-
-
-
