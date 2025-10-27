@@ -1,4 +1,4 @@
- #!/usr/bin/env python3 ac
+#!/usr/bin/env python3
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import yt_dlp
@@ -752,6 +752,55 @@ def generate_captcha_image(captcha_code):
         logger.error(f"Error generating CAPTCHA image: {e}")
         return None
 
+def cleanup_expired_captchas():
+    """Remove expired CAPTCHAs and sessions"""
+    try:
+        now = datetime.now()
+        
+        # Clean expired CAPTCHAs with thread safety
+        with captcha_store_lock:
+            expired_keys = [
+                key for key, data in captcha_store.items() 
+                if now > data['expires']
+            ]
+            for key in expired_keys:
+                captcha_store.pop(key, None)
+        
+        # Clean expired sessions with thread safety
+        with verified_sessions_lock:
+            expired_sessions = [
+                key for key, data in verified_sessions.items()
+                if now > data['expires']
+            ]
+            for key in expired_sessions:
+                verified_sessions.pop(key, None)
+                
+        if expired_keys or expired_sessions:
+            logger.info("Cleaned up %d expired CAPTCHAs and %d expired sessions", 
+                       len(expired_keys), len(expired_sessions))
+    except Exception as e:
+        logger.error("Error cleaning up expired items: %s", e)
+
+def extract_video_id(url):
+    """Extract YouTube video ID from various URL formats"""
+    try:
+        # Handle different YouTube URL formats
+        patterns = [
+            r'(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})',
+            r'youtube\.com\/watch\?.*?v=([a-zA-Z0-9_-]{11})',
+        ]
+        
+        for pattern in patterns:
+            match = re.search(pattern, url)
+            if match:
+                return match.group(1)
+        
+        # If no pattern matches, return None
+        return None
+    except Exception as e:
+        logger.error("Error extracting video ID from URL %s: %s", url, e)
+        return None
+
 @app.route('/api/generate-captcha')
 def generate_captcha():
     """Generate a new CAPTCHA code and store it"""
@@ -837,10 +886,10 @@ def verify_captcha():
         # Create session token only if CAPTCHA is valid
         session_token = str(uuid.uuid4())
         with verified_sessions_lock:
-           verified_sessions[session_token] = {
-               'verified_at': datetime.now(),
-               'expires': datetime.now() + timedelta(minutes=10),
-               'verified_videos': set()  # ADD THIS
+            verified_sessions[session_token] = {
+                'verified_at': datetime.now(),
+                'expires': datetime.now() + timedelta(minutes=10),
+                'verified_videos': set()  # ADD THIS LINE
             }
         
         logger.info("✅ CAPTCHA verified successfully for ID: %s, session token: %s", captcha_id, session_token)
@@ -850,34 +899,45 @@ def verify_captcha():
         logger.exception("Error verifying CAPTCHA: %s", e)
         return jsonify({'valid': False, 'error': 'Failed to verify CAPTCHA. Please try again.'}), 500
 
-def cleanup_expired_captchas():
-    """Remove expired CAPTCHAs and sessions"""
+@app.route('/api/verify-video', methods=['POST'])
+def verify_video():
+    """Verify a specific video for download within an existing session"""
     try:
-        now = datetime.now()
+        data = request.get_json() or {}
+        session_token = data.get('session_token')
+        url = data.get('url')
         
-        # Clean expired CAPTCHAs with thread safety
-        with captcha_store_lock:
-            expired_keys = [
-                key for key, data in captcha_store.items() 
-                if now > data['expires']
-            ]
-            for key in expired_keys:
-                captcha_store.pop(key, None)
+        if not session_token or not url:
+            return jsonify({'error': 'Session token and URL required'}), 400
         
-        # Clean expired sessions with thread safety
+        # Extract video ID
+        video_id = extract_video_id(url)
+        if not video_id:
+            return jsonify({'error': 'Invalid YouTube URL'}), 400
+        
+        # Verify session and add video to verified set
         with verified_sessions_lock:
-            expired_sessions = [
-                key for key, data in verified_sessions.items()
-                if now > data['expires']
-            ]
-            for key in expired_sessions:
-                verified_sessions.pop(key, None)
-                
-        if expired_keys or expired_sessions:
-            logger.info("Cleaned up %d expired CAPTCHAs and %d expired sessions", 
-                       len(expired_keys), len(expired_sessions))
+            if session_token not in verified_sessions:
+                return jsonify({'error': 'Invalid or expired session'}), 403
+            
+            session_data = verified_sessions[session_token]
+            if datetime.now() > session_data['expires']:
+                verified_sessions.pop(session_token, None)
+                return jsonify({'error': 'Session expired'}), 403
+            
+            # Initialize verified_videos if it doesn't exist
+            if 'verified_videos' not in session_data:
+                session_data['verified_videos'] = set()
+            
+            # Add this video to the verified set
+            session_data['verified_videos'].add(video_id)
+            
+        logger.info("✅ Video %s verified for download in session %s", video_id, session_token)
+        return jsonify({'success': True, 'video_id': video_id}), 200
+        
     except Exception as e:
-        logger.error("Error cleaning up expired items: %s", e)
+        logger.exception("Error verifying video: %s", e)
+        return jsonify({'error': 'Failed to verify video'}), 500
 
 def cleanup_old_jobs():
     """Remove old jobs and their temp directories"""
@@ -1127,7 +1187,10 @@ def download_video():
             return jsonify({'error': 'CAPTCHA session expired'}), 403
         
         # Check if this video is already verified in this session
-        verified_videos = session_data.get('verified_videos', set())
+        if 'verified_videos' not in session_data:
+            session_data['verified_videos'] = set()
+        
+        verified_videos = session_data['verified_videos']
         if video_id not in verified_videos:
             logger.warning("Video %s not verified in session %s", video_id, session_token)
             return jsonify({'error': 'CAPTCHA verification required for this video'}), 403
@@ -1341,6 +1404,3 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
-
-
-
