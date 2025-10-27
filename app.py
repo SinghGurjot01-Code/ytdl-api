@@ -55,13 +55,9 @@ threading.Thread(target=auto_clear_log, daemon=True).start()
 
 # In-memory tracking with thread safety
 download_status = {}
-captcha_store = {}
-verified_sessions = {}
 
 # Thread locks for thread-safe operations
 download_status_lock = threading.Lock()
-captcha_store_lock = threading.Lock()
-verified_sessions_lock = threading.Lock()
 
 class DownloadProgress:
     def __init__(self):
@@ -673,139 +669,6 @@ def download_worker(url, format_str, file_ext, job_id):
         except Exception as e:
             logger.error("Error cleaning up temp dir for job %s: %s", job_id, e)
 
-def generate_captcha_image(captcha_code):
-    """Generate a CAPTCHA image with the given code"""
-    try:
-        width, height = 220, 100
-        image = Image.new('RGB', (width, height), color=(255, 255, 255))
-        draw = ImageDraw.Draw(image)
-        
-        font_size = 36
-        try:
-            font_paths = [
-                "arial.ttf",
-                "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
-                "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-                "/System/Library/Fonts/Arial.ttf",
-                "C:/Windows/Fonts/arial.ttf"
-            ]
-            font = None
-            for font_path in font_paths:
-                try:
-                    font = ImageFont.truetype(font_path, font_size)
-                    break
-                except IOError:
-                    continue
-            if font is None:
-                font = ImageFont.load_default()
-        except Exception:
-            font = ImageFont.load_default()
-        
-        # Add random circles for noise
-        for _ in range(15):
-            x1 = random.randint(0, width)
-            y1 = random.randint(0, height)
-            x2 = random.randint(x1, min(x1 + 30, width))
-            y2 = random.randint(y1, min(y1 + 20, height))
-            draw.ellipse([(x1, y1), (x2, y2)], 
-                        fill=(random.randint(200, 255), random.randint(200, 255), random.randint(200, 255)),
-                        outline=(random.randint(180, 220), random.randint(180, 220), random.randint(180, 220)))
-        
-        # Add random lines for noise
-        for _ in range(8):
-            x1 = random.randint(0, width)
-            y1 = random.randint(0, height)
-            x2 = random.randint(0, width)
-            y2 = random.randint(0, height)
-            draw.line([(x1, y1), (x2, y2)], 
-                     fill=(random.randint(150, 200), random.randint(150, 200), random.randint(150, 200)), 
-                     width=random.randint(1, 3))
-        
-        # Add random dots for noise
-        for _ in range(150):
-            x = random.randint(0, width)
-            y = random.randint(0, height)
-            radius = random.randint(1, 3)
-            draw.ellipse([(x, y), (x + radius, y + radius)], 
-                        fill=(random.randint(200, 255), random.randint(200, 255), random.randint(200, 255)))
-        
-        # Calculate text position
-        text_bbox = draw.textbbox((0, 0), captcha_code, font=font)
-        text_width = text_bbox[2] - text_bbox[0]
-        text_height = text_bbox[3] - text_bbox[1]
-        
-        x = (width - text_width) // 2
-        y = (height - text_height) // 2 - 5
-        
-        # Draw text with distortion
-        for i, char in enumerate(captcha_code):
-            char_bbox = draw.textbbox((0, 0), char, font=font)
-            char_width = char_bbox[2] - char_bbox[0]
-            
-            char_x = x + i * (text_width // len(captcha_code)) + random.randint(-3, 3)
-            char_y = y + random.randint(-5, 5)
-            
-            color = (random.randint(0, 100), random.randint(0, 100), random.randint(0, 100))
-            
-            # Create individual character image for rotation
-            char_img = Image.new('RGBA', (char_width + 10, text_height + 10), (0, 0, 0, 0))
-            char_draw = ImageDraw.Draw(char_img)
-            char_draw.text((5, 5), char, font=font, fill=color)
-            
-            # Rotate character slightly
-            rotation_angle = random.uniform(-10, 10)
-            rotated_char = char_img.rotate(rotation_angle, expand=1, resample=Image.BICUBIC)
-            
-            # Paste rotated character onto main image
-            image.paste(rotated_char, (char_x, char_y), rotated_char)
-        
-        # Apply slight blur
-        image = image.filter(ImageFilter.GaussianBlur(radius=0.8))
-        
-        # Add border
-        draw.rectangle([0, 0, width-1, height-1], outline=(100, 100, 100), width=2)
-        
-        # Convert to base64
-        img_byte_arr = io.BytesIO()
-        image.save(img_byte_arr, format='PNG', optimize=True)
-        img_byte_arr = img_byte_arr.getvalue()
-        
-        img_base64 = base64.b64encode(img_byte_arr).decode('utf-8')
-        return f"data:image/png;base64,{img_base64}"
-        
-    except Exception as e:
-        logger.error(f"Error generating CAPTCHA image: {e}")
-        return None
-
-def cleanup_expired_captchas():
-    """Remove expired CAPTCHAs and sessions"""
-    try:
-        now = datetime.now()
-        
-        # Clean expired CAPTCHAs with thread safety
-        with captcha_store_lock:
-            expired_keys = [
-                key for key, data in captcha_store.items() 
-                if now > data['expires']
-            ]
-            for key in expired_keys:
-                captcha_store.pop(key, None)
-        
-        # Clean expired sessions with thread safety
-        with verified_sessions_lock:
-            expired_sessions = [
-                key for key, data in verified_sessions.items()
-                if now > data['expires']
-            ]
-            for key in expired_sessions:
-                verified_sessions.pop(key, None)
-                
-        if expired_keys or expired_sessions:
-            logger.info("Cleaned up %d expired CAPTCHAs and %d expired sessions", 
-                       len(expired_keys), len(expired_sessions))
-    except Exception as e:
-        logger.error("Error cleaning up expired items: %s", e)
-
 def extract_video_id(url):
     """Extract YouTube video ID from various URL formats"""
     try:
@@ -825,144 +688,6 @@ def extract_video_id(url):
     except Exception as e:
         logger.error("Error extracting video ID from URL %s: %s", url, e)
         return None
-
-@app.route('/api/generate-captcha')
-def generate_captcha():
-    """Generate a new CAPTCHA code and store it"""
-    try:
-        captcha_code = str(random.randint(1000, 9999))
-        captcha_id = str(uuid.uuid4())
-        
-        captcha_image = generate_captcha_image(captcha_code)
-        
-        if not captcha_image:
-            logger.error("Failed to generate CAPTCHA image")
-            return jsonify({'error': 'Failed to generate CAPTCHA image'}), 500
-        
-        # Store CAPTCHA data with thread safety
-        with captcha_store_lock:
-            captcha_store[captcha_id] = {
-                'code': captcha_code,
-                'expires': datetime.now() + timedelta(minutes=5),
-                'image_data': captcha_image
-            }
-        
-        # Clean up expired CAPTCHAs
-        cleanup_expired_captchas()
-        
-        logger.info("Generated CAPTCHA: %s with ID: %s", captcha_code, captcha_id)
-        
-        response_data = {
-            'captcha_id': captcha_id,
-            'captcha_image': captcha_image
-        }
-        
-        return jsonify(response_data)
-        
-    except Exception as e:
-        logger.error("Error generating CAPTCHA: %s", e)
-        return jsonify({'error': 'Failed to generate CAPTCHA'}), 500
-
-@app.route('/api/verify-captcha', methods=['POST'])
-def verify_captcha():
-    """Verify CAPTCHA input and create session token"""
-    try:
-        data = request.get_json() or {}
-        captcha_id = data.get('captcha_id')
-        user_input = data.get('captcha_input')
-        
-        logger.info("CAPTCHA verification request - ID: %s, Input: %s", captcha_id, user_input)
-        
-        if not captcha_id or not user_input:
-            return jsonify({'valid': False, 'error': 'CAPTCHA ID and input required'}), 400
-        
-        # Clean up expired CAPTCHAs first
-        cleanup_expired_captchas()
-        
-        # Check if CAPTCHA exists and verify with thread safety
-        with captcha_store_lock:
-            captcha_data = captcha_store.get(captcha_id)
-            
-            if not captcha_data:
-                logger.warning("CAPTCHA verification failed: ID %s not found in store", captcha_id)
-                return jsonify({'valid': False, 'error': 'CAPTCHA not found or already used'}), 404
-            
-            # Check if CAPTCHA is expired
-            if datetime.now() > captcha_data['expires']:
-                captcha_store.pop(captcha_id, None)
-                logger.warning("CAPTCHA verification failed: ID %s expired", captcha_id)
-                return jsonify({'valid': False, 'error': 'CAPTCHA expired'}), 400
-            
-            # Store the code before removing from store
-            stored_code = captcha_data['code']
-            
-            # Remove CAPTCHA immediately to prevent reuse (one-time use)
-            captcha_store.pop(captcha_id, None)
-            logger.info("CAPTCHA %s removed from store (one-time use)", captcha_id)
-        
-        # Verify the code AFTER removing from store (outside lock)
-        is_valid = user_input.strip() == stored_code
-        
-        if not is_valid:
-            logger.warning("CAPTCHA verification failed: incorrect code '%s' for ID %s (expected '%s')", 
-                          user_input, captcha_id, stored_code)
-            return jsonify({'valid': False, 'error': 'Incorrect CAPTCHA code'}), 400
-        
-        # Create session token only if CAPTCHA is valid
-        session_token = str(uuid.uuid4())
-        with verified_sessions_lock:
-            verified_sessions[session_token] = {
-                'verified_at': datetime.now(),
-                'expires': datetime.now() + timedelta(minutes=10),
-                'verified_videos': set()
-            }
-        
-        logger.info("✅ CAPTCHA verified successfully for ID: %s, session token: %s", captcha_id, session_token)
-        return jsonify({'valid': True, 'session_token': session_token}), 200
-            
-    except Exception as e:
-        logger.exception("Error verifying CAPTCHA: %s", e)
-        return jsonify({'valid': False, 'error': 'Failed to verify CAPTCHA. Please try again.'}), 500
-
-@app.route('/api/verify-video', methods=['POST'])
-def verify_video():
-    """Verify a specific video for download within an existing session"""
-    try:
-        data = request.get_json() or {}
-        session_token = data.get('session_token')
-        url = data.get('url')
-        
-        if not session_token or not url:
-            return jsonify({'error': 'Session token and URL required'}), 400
-        
-        # Extract video ID
-        video_id = extract_video_id(url)
-        if not video_id:
-            return jsonify({'error': 'Invalid YouTube URL'}), 400
-        
-        # Verify session and add video to verified set
-        with verified_sessions_lock:
-            if session_token not in verified_sessions:
-                return jsonify({'error': 'Invalid or expired session'}), 403
-            
-            session_data = verified_sessions[session_token]
-            if datetime.now() > session_data['expires']:
-                verified_sessions.pop(session_token, None)
-                return jsonify({'error': 'Session expired'}), 403
-            
-            # Initialize verified_videos if it doesn't exist
-            if 'verified_videos' not in session_data:
-                session_data['verified_videos'] = set()
-            
-            # Add this video to the verified set
-            session_data['verified_videos'].add(video_id)
-            
-        logger.info("✅ Video %s verified for download in session %s", video_id, session_token)
-        return jsonify({'success': True, 'video_id': video_id}), 200
-        
-    except Exception as e:
-        logger.exception("Error verifying video: %s", e)
-        return jsonify({'error': 'Failed to verify video'}), 500
 
 def cleanup_old_jobs():
     """Remove old jobs and their temp directories"""
@@ -1180,12 +905,11 @@ def get_video_info():
 
 @app.route('/api/download', methods=['POST'])
 def download_video():
-    """Download endpoint with CAPTCHA verification - auto-verify on first download"""
+    """Download endpoint without CAPTCHA verification"""
     data = request.get_json() or {}
     url = data.get('url')
     format_str = data.get('format')
     file_ext = data.get('file_ext', 'mp4')
-    session_token = data.get('session_token')
 
     if not url or not format_str:
         return jsonify({'error': 'URL and format are required'}), 400
@@ -1193,33 +917,6 @@ def download_video():
     # Basic URL validation
     if not url.startswith(('http://', 'https://')):
         return jsonify({'error': 'Invalid URL format'}), 400
-    
-    # Extract video ID for session tracking
-    video_id = extract_video_id(url)
-    if not video_id:
-        return jsonify({'error': 'Invalid YouTube URL'}), 400
-    
-    # Verify CAPTCHA session with thread safety
-    with verified_sessions_lock:
-        if not session_token or session_token not in verified_sessions:
-            logger.warning("Download attempt without valid session token")
-            return jsonify({'error': 'CAPTCHA verification required'}), 403
-        
-        session_data = verified_sessions[session_token]
-        if datetime.now() > session_data['expires']:
-            verified_sessions.pop(session_token, None)
-            logger.warning("Download attempt with expired session token")
-            return jsonify({'error': 'CAPTCHA session expired'}), 403
-        
-        # Initialize verified_videos set if it doesn't exist
-        if 'verified_videos' not in session_data:
-            session_data['verified_videos'] = set()
-        
-        # AUTO-VERIFY: Add this video to verified set on first download attempt
-        verified_videos = session_data['verified_videos']
-        if video_id not in verified_videos:
-            verified_videos.add(video_id)
-            logger.info("✅ Auto-verified video %s for download in session %s", video_id, session_token)
     
     if not validate_format_string(format_str):
         logger.warning("Invalid format string rejected: %s", format_str)
@@ -1241,7 +938,7 @@ def download_video():
     job.ffmpeg_available = check_ffmpeg()
     safe_set_job(job_id, job)
 
-    logger.info("Processing download for video %s with job %s", video_id, job_id)
+    logger.info("Processing download for URL %s with job %s", url, job_id)
 
     t = threading.Thread(target=download_worker, args=(url, format_str, file_ext, job_id), daemon=True)
     t.start()
@@ -1328,7 +1025,6 @@ def download_file(job_id):
 def schedule_cleanup():
     """Run cleanup tasks periodically"""
     cleanup_old_jobs()
-    cleanup_expired_captchas()
     # Reschedule itself
     threading.Timer(1800, schedule_cleanup).start()  # Every 30 minutes
 
@@ -1355,8 +1051,7 @@ def health_check():
         'cookies_path': YTDL_COOKIES_PATH or 'Not set',
         'cookies_preview': cookie_preview,
         'ffmpeg_available': check_ffmpeg(),
-        'active_jobs': len(download_status),
-        'active_sessions': len(verified_sessions)
+        'active_jobs': len(download_status)
     })
 
 @app.route('/api/debug-cookies')
@@ -1398,14 +1093,6 @@ if __name__ == '__main__':
     else:
         logger.info("FFmpeg available - full functionality enabled.")
         print("✅ FFmpeg is available - Full functionality enabled")
-
-    try:
-        from PIL import Image
-        print("✅ CAPTCHA image system initialized with Pillow")
-        logger.info("CAPTCHA image system initialized with Pillow")
-    except ImportError:
-        print("⚠️  Pillow not found - CAPTCHA will use text fallback")
-        logger.warning("Pillow not found - CAPTCHA will use text fallback")
 
     if YTDL_COOKIES_PATH:
         if os.path.exists(YTDL_COOKIES_PATH):
