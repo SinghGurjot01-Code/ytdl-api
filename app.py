@@ -384,19 +384,19 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         'skip_unavailable_fragments': True,
         'continuedl': True,
         
-        # ADD THESE NEW OPTIONS FOR YOUTUBE ISSUES:
-        'age_limit': None,  # Don't skip age-restricted videos
-        'playlist_items': '1',  # Only download first item if somehow it's a playlist
-        'allow_unplayable_formats': False,  # Skip unplayable formats
-        'ignore_no_formats_error': False,  # Don't ignore format errors
-        'format_sort': ['res', 'ext:mp4:m4a'],  # Prefer mp4/m4a formats
-        'merge_output_format': 'mp4',  # Always merge to mp4 if needed
+        # YouTube-specific options to handle signature extraction issues
+        'age_limit': None,
+        'playlist_items': '1',
+        'allow_unplayable_formats': False,
+        'ignore_no_formats_error': False,
+        'format_sort': ['res', 'ext:mp4:m4a'],
+        'merge_output_format': 'mp4',
         
         # YouTube-specific extractor options
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'web'],  # Try multiple clients
-                'skip': ['hls', 'dash'],  # Skip problematic formats initially
+                'player_client': ['android', 'web'],
+                'skip': ['hls', 'dash'],
             }
         },
         
@@ -408,7 +408,6 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
             'Connection': 'keep-alive',
         },
     }
-    
 
     # CRITICAL: Use cookies file if available
     cookies_loaded = False
@@ -452,8 +451,38 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
     }
     base_opts.update(anti_bot_opts)
 
-    # Update the format selection part in get_ytdlp_opts_with_retry
-# Replace the format selection section with this more robust version:
+    # Format selection with proper fallbacks
+    try:
+        if file_ext == 'mp3':
+            if ffmpeg_available:
+                base_opts.update({
+                    'format': 'bestaudio/best',
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': file_ext,
+                        'preferredquality': '192',
+                    }],
+                })
+            else:
+                base_opts['format'] = 'bestaudio/best'
+        else:
+            # More robust format selection with fallbacks
+            if format_str:
+                # Build a format string with fallbacks
+                format_with_fallback = f"{format_str}/best[height<=1080]/best"
+                base_opts['format'] = format_with_fallback
+                logger.info("Job %s - using format with fallback: %s", job_id, format_with_fallback)
+            else:
+                # Default safe format
+                base_opts['format'] = 'best[height<=1080]/best'
+                logger.info("Job %s - using default safe format", job_id)
+            
+    except Exception as e:
+        logger.exception("Job %s - error building ydl_opts: %s", job_id, e)
+        # Fallback to the safest default
+        base_opts['format'] = 'best'
+
+    return base_opts
 
 try:
     if file_ext == 'mp3':
@@ -1433,6 +1462,7 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
 
 
