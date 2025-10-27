@@ -1153,9 +1153,13 @@ def get_video_info():
             'suggestion': 'Please try again with a different video URL'
         }), 500
 
+# SIMPLIFIED APPROACH - Update the download_video() function in app.py
+# This will automatically verify videos on download attempt
+# REPLACE the download_video() function (around line 1092) with this:
+
 @app.route('/api/download', methods=['POST'])
 def download_video():
-    """Download endpoint with CAPTCHA verification - only once per link"""
+    """Download endpoint with CAPTCHA verification - auto-verify on first download"""
     data = request.get_json() or {}
     url = data.get('url')
     format_str = data.get('format')
@@ -1174,7 +1178,7 @@ def download_video():
     if not video_id:
         return jsonify({'error': 'Invalid YouTube URL'}), 400
     
-    # Verify CAPTCHA session with thread safety - check if this video has been verified
+    # Verify CAPTCHA session with thread safety
     with verified_sessions_lock:
         if not session_token or session_token not in verified_sessions:
             logger.warning("Download attempt without valid session token")
@@ -1186,14 +1190,15 @@ def download_video():
             logger.warning("Download attempt with expired session token")
             return jsonify({'error': 'CAPTCHA session expired'}), 403
         
-        # Check if this video is already verified in this session
+        # Initialize verified_videos set if it doesn't exist
         if 'verified_videos' not in session_data:
             session_data['verified_videos'] = set()
         
+        # AUTO-VERIFY: Add this video to verified set on first download attempt
         verified_videos = session_data['verified_videos']
         if video_id not in verified_videos:
-            logger.warning("Video %s not verified in session %s", video_id, session_token)
-            return jsonify({'error': 'CAPTCHA verification required for this video'}), 403
+            verified_videos.add(video_id)
+            logger.info("✅ Auto-verified video %s for download in session %s", video_id, session_token)
     
     if not validate_format_string(format_str):
         logger.warning("Invalid format string rejected: %s", format_str)
@@ -1404,3 +1409,4 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
