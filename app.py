@@ -837,9 +837,10 @@ def verify_captcha():
         # Create session token only if CAPTCHA is valid
         session_token = str(uuid.uuid4())
         with verified_sessions_lock:
-            verified_sessions[session_token] = {
-                'verified_at': datetime.now(),
-                'expires': datetime.now() + timedelta(minutes=10)
+           verified_sessions[session_token] = {
+               'verified_at': datetime.now(),
+               'expires': datetime.now() + timedelta(minutes=10),
+               'verified_videos': set()  # ADD THIS
             }
         
         logger.info("✅ CAPTCHA verified successfully for ID: %s, session token: %s", captcha_id, session_token)
@@ -1340,4 +1341,5 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
