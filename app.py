@@ -383,23 +383,18 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         'fragment_retries': 15,
         'skip_unavailable_fragments': True,
         'continuedl': True,
-        
-        # YouTube-specific options to handle signature extraction issues
         'age_limit': None,
         'playlist_items': '1',
         'allow_unplayable_formats': False,
         'ignore_no_formats_error': False,
         'format_sort': ['res', 'ext:mp4:m4a'],
         'merge_output_format': 'mp4',
-        
-        # YouTube-specific extractor options
         'extractor_args': {
             'youtube': {
                 'player_client': ['android', 'web'],
                 'skip': ['hls', 'dash'],
             }
         },
-        
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -409,19 +404,15 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         },
     }
 
-    # CRITICAL: Use cookies file if available
     cookies_loaded = False
-    
     if YTDL_COOKIES_PATH:
         if os.path.exists(YTDL_COOKIES_PATH):
             try:
-                # Clean the cookies file first
                 cleaned_cookies = clean_cookies_file(YTDL_COOKIES_PATH)
                 if cleaned_cookies:
                     base_opts['cookiefile'] = cleaned_cookies
                     logger.info("✅ Using cleaned cookies file: %s for job %s", cleaned_cookies, job_id)
                 else:
-                    # Fallback to original if cleaning fails
                     base_opts['cookiefile'] = YTDL_COOKIES_PATH
                     logger.info("✅ Using original cookies file: %s for job %s", YTDL_COOKIES_PATH, job_id)
                 cookies_loaded = True
@@ -450,6 +441,33 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         }
     }
     base_opts.update(anti_bot_opts)
+
+    try:
+        if file_ext == 'mp3':
+            if ffmpeg_available:
+                base_opts.update({
+                    'format': 'bestaudio/best',
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': file_ext,
+                        'preferredquality': '192',
+                    }],
+                })
+            else:
+                base_opts['format'] = 'bestaudio/best'
+        else:
+            if format_str:
+                format_with_fallback = f"{format_str}/best[height<=1080]/best"
+                base_opts['format'] = format_with_fallback
+                logger.info("Job %s - using format with fallback: %s", job_id, format_with_fallback)
+            else:
+                base_opts['format'] = 'best[height<=1080]/best'
+                logger.info("Job %s - using default safe format", job_id)
+    except Exception as e:
+        logger.exception("Job %s - error building ydl_opts: %s", job_id, e)
+        base_opts['format'] = 'best'
+
+    return base_opts
 
     # Format selection with proper fallbacks
     try:
@@ -1462,6 +1480,7 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
 
 
