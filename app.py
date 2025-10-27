@@ -236,23 +236,22 @@ def find_final_file_in_dir(temp_dir, title_hint=None):
     return files[0]
 
 def validate_format_string(format_str):
-    """Validate format string to prevent injection attacks."""
     if not format_str or not isinstance(format_str, str):
         return False
-    
-    # More restrictive allowed characters
-    allowed_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]+/._-')
+    format_str = format_str.strip()
+    allowed_chars = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789[]+/._-!=*?,')
     if not all(c in allowed_chars for c in format_str):
         return False
-    
-    if len(format_str) > 100:  # Reduced from 200
+    if len(format_str) > 100:  
         return False
-    
-    # Additional security checks
-    if '..' in format_str or '//' in format_str:
+    # Disallow suspicious sequences
+    if '..' in format_str:
         return False
-    
+    # Maybe allow single slash but not double
+    if '//' in format_str:
+        return False
     return True
+
 
 def get_available_formats(url):
     """Get available formats for a YouTube URL"""
@@ -1117,3 +1116,4 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
