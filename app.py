@@ -435,29 +435,22 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
     # Format-specific configuration
     try:
         if file_ext == 'mp3':
-            if ffmpeg_available:
-                base_opts.update({
-                    'format': 'bestaudio/best',
-                    'postprocessors': [{
-                        'key': 'FFmpegExtractAudio',
-                        'preferredcodec': file_ext,
-                        'preferredquality': '192',
-                    }],
-                })
-            else:
-                # Fallback for audio without ffmpeg
-                base_opts['format'] = 'bestaudio[ext=m4a]/bestaudio/best'
-        else:
-            # Video format with robust fallbacks
-            if format_str and validate_format_string(format_str):
-                # Enhanced format selection with multiple fallbacks
-                format_with_fallback = f"{format_str}/bv*[height<=1080]+ba/b[height<=720]/best[height<=1080]/best"
-                base_opts['format'] = format_with_fallback
-                logger.info("Job %s - using enhanced format with fallback: %s", job_id, format_with_fallback)
-            else:
-                # Default safe format selection
-                base_opts['format'] = 'bv*[vcodec^=avc1][height<=1080]+ba[acodec^=mp4a] / bv*[height<=1080]+ba / best[height<=1080] / best'
-                logger.info("Job %s - using default android-optimized format", job_id)
+    if ffmpeg_available:
+        base_opts.update({
+            'format': 'bestaudio/best',
+            'postprocessors': [{ … }],
+        })
+    else:
+        base_opts['format'] = 'bestaudio[ext=m4a]'  # remove the fallback slash
+else:
+    if format_str and validate_format_string(format_str):
+        format_with_fallback = f"{format_str}/bv*[height<=1080]+ba/b[height<=720]/best[height<=1080]/best"
+        base_opts['format'] = format_with_fallback
+        logger.info("Job %s - using enhanced format with fallback: %s", job_id, format_with_fallback)
+    else:
+        base_opts['format'] = 'bv*[vcodec^=avc1][height<=1080]+ba[acodec^=mp4a] / bv*[height<=1080]+ba / best[height<=1080] / best'
+        logger.info("Job %s - using default android-optimized format", job_id)
+
             
     except Exception as e:
         logger.exception("Job %s - error building format options: %s", job_id, e)
@@ -1116,4 +1109,5 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
