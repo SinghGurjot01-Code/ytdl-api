@@ -383,6 +383,23 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
         'fragment_retries': 15,
         'skip_unavailable_fragments': True,
         'continuedl': True,
+        
+        # ADD THESE NEW OPTIONS FOR YOUTUBE ISSUES:
+        'age_limit': None,  # Don't skip age-restricted videos
+        'playlist_items': '1',  # Only download first item if somehow it's a playlist
+        'allow_unplayable_formats': False,  # Skip unplayable formats
+        'ignore_no_formats_error': False,  # Don't ignore format errors
+        'format_sort': ['res', 'ext:mp4:m4a'],  # Prefer mp4/m4a formats
+        'merge_output_format': 'mp4',  # Always merge to mp4 if needed
+        
+        # YouTube-specific extractor options
+        'extractor_args': {
+            'youtube': {
+                'player_client': ['android', 'web'],  # Try multiple clients
+                'skip': ['hls', 'dash'],  # Skip problematic formats initially
+            }
+        },
+        
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -391,6 +408,7 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
             'Connection': 'keep-alive',
         },
     }
+    
 
     # CRITICAL: Use cookies file if available
     cookies_loaded = False
@@ -1409,4 +1427,5 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
