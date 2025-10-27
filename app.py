@@ -502,39 +502,6 @@ def get_ytdlp_opts_with_retry(temp_dir, job_id, format_str, file_ext, ffmpeg_ava
 
     return base_opts
 
-try:
-    if file_ext == 'mp3':
-        if ffmpeg_available:
-            base_opts.update({
-                'format': 'bestaudio/best',
-                'postprocessors': [{
-                    'key': 'FFmpegExtractAudio',
-                    'preferredcodec': file_ext,
-                    'preferredquality': '192',
-                }],
-            })
-        else:
-            base_opts['format'] = 'bestaudio/best'
-    else:
-        # More robust format selection with fallbacks
-        # Try to use specific format, but have multiple fallbacks
-        if format_str:
-            # Build a format string with fallbacks
-            format_with_fallback = f"{format_str}/best[height<=1080]/best"
-            base_opts['format'] = format_with_fallback
-            logger.info("Job %s - using format with fallback: %s", job_id, format_with_fallback)
-        else:
-            # Default safe format
-            base_opts['format'] = 'best[height<=1080]/best'
-            logger.info("Job %s - using default safe format", job_id)
-        
-except Exception as e:
-    logger.exception("Job %s - error building ydl_opts: %s", job_id, e)
-    # Fallback to the safest default
-    base_opts['format'] = 'best'
-
-return base_opts
-
 def handle_download_error(job, job_id, error, retry_count, max_retries):
     """Handle download errors with appropriate retry logic"""
     error_msg = str(error)
@@ -1480,6 +1447,7 @@ if __name__ == '__main__':
     logger.info(f"YTDL API Server starting on port {port}")
     
     app.run(debug=False, host='0.0.0.0', port=port, use_reloader=False)
+
 
 
 
